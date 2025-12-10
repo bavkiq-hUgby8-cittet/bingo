@@ -34,11 +34,12 @@
         @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
         .aguardo-text{font-size:1.5rem;margin-bottom:20px;text-align:center}
         .aguardo-subtext{color:rgba(255,255,255,.6);text-align:center}
-        .numero-alerta{display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e63946,#c41e3a);padding:15px 30px;border-radius:15px;font-size:1.5rem;font-weight:900;z-index:100;box-shadow:0 10px 40px rgba(230,57,70,.5);animation:pulse-alerta .5s ease infinite}
-        .numero-alerta.active{display:block}
-        @keyframes pulse-alerta{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
-        .timer-bar{height:4px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:10px;overflow:hidden}
-        .timer-progress{height:100%;background:#fff;transition:width 1s linear}
+        /* AVISO GLOBO GIRANDO */
+        .globo-girando-aviso{display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,#d97706);padding:15px 30px;border-radius:15px;font-weight:700;z-index:100;box-shadow:0 10px 40px rgba(245,158,11,.5);animation:pulseAviso .5s ease infinite;text-align:center}
+        .globo-girando-aviso.active{display:block}
+        @keyframes pulseAviso{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
+        .globo-girando-aviso .icone{font-size:1.5rem;margin-right:10px;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
         .cartela-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding:10px;background:rgba(255,255,255,.1);border-radius:12px}
         .nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
         .nav-btn:active{background:rgba(255,255,255,.4)}
@@ -63,24 +64,27 @@
         .numero.marcado{background:linear-gradient(135deg,#e63946,#c41e3a);color:#fff;border-color:#c41e3a;box-shadow:0 4px 12px rgba(230,57,70,.4);animation:stamp .3s ease}
         @keyframes stamp{0%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
         .numero.coringa{background:linear-gradient(135deg,#ffd700,#ffa500);color:#333;border-color:#ff8c00;font-family:'Bangers',cursive;font-size:1.2rem;cursor:default}
-        .numero.destaque{animation:destaque .5s ease;box-shadow:0 0 20px rgba(255,215,0,.8)}
-        @keyframes destaque{0%,100%{box-shadow:0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 30px rgba(255,215,0,1)}}
         .marcados-counter{display:flex;justify-content:center;align-items:center;gap:5px;margin:15px 0;flex-wrap:wrap}
         .marcado-dot{width:12px;height:12px;border-radius:50%;background:#e9ecef}
         .marcado-dot.ativo{background:#e63946}
         .marcados-text{width:100%;text-align:center;color:#666;font-size:.9rem;margin-top:5px}
         .btn-bingo{width:100%;padding:20px;font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#95a5a6,#7f8c8d);color:#fff;border:none;border-radius:15px;cursor:not-allowed;margin-top:15px;text-transform:uppercase;letter-spacing:3px}
-        .btn-bingo.ativo{background:linear-gradient(135deg,var(--green),#16a34a);cursor:pointer;animation:pulse-bingo 1s ease infinite;box-shadow:0 8px 30px rgba(34,197,94,.5)}
-        @keyframes pulse-bingo{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+        .btn-bingo.ativo{background:linear-gradient(135deg,var(--green),#16a34a);cursor:pointer;animation:pulseBingo 1s ease infinite;box-shadow:0 8px 30px rgba(34,197,94,.5)}
+        @keyframes pulseBingo{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
         .btn-bingo:active.ativo{transform:scale(.98)}
         .swipe-hint{text-align:center;padding:10px;color:rgba(255,255,255,.5);font-size:.9rem}
         .pagination-dots{display:flex;justify-content:center;gap:8px;margin-top:15px}
         .pagination-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3)}
         .pagination-dot.active{background:#ffd700;transform:scale(1.2)}
+        /* GANHADORES */
+        .ganhadores-aviso{margin:15px 0;padding:15px;background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(22,163,74,.1));border-radius:15px;border:2px solid var(--green);text-align:center}
+        .ganhadores-aviso h4{font-family:'Fredoka One',cursive;color:var(--green);margin-bottom:10px}
+        .ganhadores-mini{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+        .ganhador-mini{display:flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,.1);border-radius:20px;font-size:.85rem}
+        .ganhador-mini img{width:25px;height:25px;border-radius:50%}
         .tela-verificacao{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px}
         .tela-verificacao.active{display:flex}
         .verificacao-icon{font-size:5rem;margin-bottom:30px;animation:spin 2s linear infinite}
-        @keyframes spin{to{transform:rotate(360deg)}}
         .verificacao-text{font-size:1.5rem;margin-bottom:20px}
         .tela-resultado{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px}
         .tela-resultado.active{display:flex}
@@ -89,14 +93,12 @@
         .resultado-titulo.venceu{color:#ffd700;text-shadow:0 5px 20px rgba(255,215,0,.5)}
         .resultado-titulo.perdeu{color:#e74c3c}
         .resultado-msg{font-size:1.2rem;color:rgba(255,255,255,.8);margin-bottom:30px}
-        .numeros-perdidos{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0}
-        .numero-perdido{padding:10px 20px;background:rgba(231,76,60,.3);border-radius:10px;font-weight:700}
         .btn-voltar{padding:15px 40px;background:linear-gradient(135deg,var(--blue),#2563eb);border:none;border-radius:12px;color:#fff;font-size:1.1rem;font-weight:600;cursor:pointer;margin-top:20px}
         .confetti{position:fixed;width:12px;height:12px;top:-20px;animation:fall 3s linear infinite;z-index:400}
         @keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
-        .balao-reacao{position:fixed;bottom:150px;padding:10px 15px;background:linear-gradient(135deg,rgba(34,197,94,.95),rgba(22,163,74,.95));border-radius:50px;display:flex;align-items:center;gap:8px;animation:pop-balao .5s cubic-bezier(.68,-.55,.265,1.55),fade-balao .5s ease 2s forwards;box-shadow:0 5px 20px rgba(34,197,94,.5);z-index:150}
-        @keyframes pop-balao{0%{transform:scale(0) translateY(50px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
-        @keyframes fade-balao{to{opacity:0;transform:translateY(-30px) scale(.5)}}
+        .balao-reacao{position:fixed;bottom:150px;padding:10px 15px;background:linear-gradient(135deg,rgba(34,197,94,.95),rgba(22,163,74,.95));border-radius:50px;display:flex;align-items:center;gap:8px;animation:popBalao .5s cubic-bezier(.34,1.56,.64,1),fadeBalao .5s ease 2s forwards;box-shadow:0 5px 20px rgba(34,197,94,.5);z-index:150}
+        @keyframes popBalao{0%{transform:scale(0) translateY(50px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+        @keyframes fadeBalao{to{opacity:0;transform:translateY(-30px) scale(.5)}}
         .balao-foto{width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #fff}
         .balao-nome{font-weight:700;color:#fff;font-size:.9rem}
         .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);padding:15px 30px;background:rgba(0,0,0,.9);color:#fff;border-radius:12px;font-weight:600;z-index:500;transition:transform .3s ease}
@@ -107,6 +109,12 @@
         .tela-erro{text-align:center;padding:60px 20px}
         .erro-icon{font-size:5rem;margin-bottom:20px}
         .hidden-input{display:none}
+        /* FIM DE JOGO */
+        .fim-jogo-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);z-index:250;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px}
+        .fim-jogo-overlay.active{display:flex}
+        .fim-jogo-icon{font-size:6rem;margin-bottom:20px}
+        .fim-jogo-titulo{font-family:'Bangers',cursive;font-size:2.5rem;color:var(--yellow);margin-bottom:20px}
+        .fim-jogo-vencedor{font-size:1.3rem;margin-bottom:30px}
         @media(max-width:350px){.numero{font-size:1.2rem}.bingo-letra{font-size:1.4rem}.btn-bingo{font-size:1.4rem;padding:15px}}
         @media(min-width:500px){.numero{font-size:2rem}.bingo-letra{font-size:2.2rem}}
     </style>
@@ -116,6 +124,12 @@
         <span class="logo">🎰 Bingo</span>
         <span class="sala-nome" id="salaNome">Carregando...</span>
     </header>
+    
+    <!-- AVISO GLOBO GIRANDO -->
+    <div class="globo-girando-aviso" id="globoGirandoAviso">
+        <span class="icone">🎱</span> ATENÇÃO! Globo girando...
+    </div>
+    
     <div class="container">
         <div class="tela" id="telaErro"><div class="erro-icon">❌</div><h2>Sala não encontrada</h2><p style="color:rgba(255,255,255,.6);margin-top:15px">Verifique o link ou QR code</p></div>
         <div class="tela active" id="telaCadastro">
@@ -129,7 +143,7 @@
                 <input type="file" id="inputFoto" class="hidden-input" accept="image/*" onchange="handleFoto(event)">
                 <input type="file" id="inputCamera" class="hidden-input" accept="image/*" capture="user" onchange="handleFoto(event)">
             </div>
-            <div class="info-cartelas"><p>ℹ️ Você receberá <strong id="qtdCartelas">2</strong> cartela(s)</p></div>
+            <div class="info-cartelas"><p>ℹ️ Você receberá <strong id="qtdCartelas">2</strong> cartela(s)</p><p style="margin-top:10px;font-size:.85rem;color:rgba(255,255,255,.6)">⚠️ Números NÃO aparecem no celular!<br>Preste atenção no telão!</p></div>
             <button class="btn-entrar" onclick="entrarNoBingo()">🎰 ENTRAR NO BINGO</button>
         </div>
         <div class="tela" id="telaAguardo">
@@ -140,7 +154,11 @@
             <p class="aguardo-subtext" style="margin-top:20px">Jogadores: <span id="aguardoJogadores">0</span></p>
         </div>
         <div class="tela" id="telaJogo">
-            <div class="numero-alerta" id="numeroAlerta"><span id="alertaLetra">B</span> <span id="alertaNumero">12</span><div class="timer-bar"><div class="timer-progress" id="timerProgress"></div></div></div>
+            <!-- GANHADORES -->
+            <div class="ganhadores-aviso" id="ganhadoresAviso" style="display:none">
+                <h4>🏆 Ganhadores</h4>
+                <div class="ganhadores-mini" id="ganhadoresMini"></div>
+            </div>
             <div class="cartela-nav"><button class="nav-btn" id="btnAnterior" onclick="cartelaAnterior()">‹</button><div class="cartela-info"><div class="jogador-nome" id="nomeJogador">Jogador</div><div class="cartela-numero"><span id="cartelaAtualNum">1</span>/<span id="cartelaTotalNum">2</span></div></div><button class="nav-btn" id="btnProxima" onclick="proximaCartela()">›</button></div>
             <div class="cartelas-wrapper" id="cartelasWrapper"><div class="cartelas-container" id="cartelasContainer"></div></div>
             <p class="swipe-hint" id="swipeHint">👆 Deslize para outras cartelas</p>
@@ -149,7 +167,8 @@
         </div>
     </div>
     <div class="tela-verificacao" id="telaVerificacao"><div class="verificacao-icon">🔍</div><h2 class="verificacao-text">Verificando...</h2><p style="color:rgba(255,255,255,.6)">Aguarde o operador</p></div>
-    <div class="tela-resultado" id="telaResultado"><div class="resultado-icon" id="resultadoIcon">🏆</div><h1 class="resultado-titulo" id="resultadoTitulo">VOCÊ VENCEU!</h1><p class="resultado-msg" id="resultadoMsg"></p><div class="numeros-perdidos" id="numerosPerdidos"></div><button class="btn-voltar" id="btnVoltar" onclick="voltarJogo()">CONTINUAR</button></div>
+    <div class="tela-resultado" id="telaResultado"><div class="resultado-icon" id="resultadoIcon">🏆</div><h1 class="resultado-titulo" id="resultadoTitulo">VOCÊ GANHOU!</h1><p class="resultado-msg" id="resultadoMsg"></p><button class="btn-voltar" id="btnVoltar" onclick="voltarJogo()">CONTINUAR JOGANDO</button></div>
+    <div class="fim-jogo-overlay" id="fimJogoOverlay"><div class="fim-jogo-icon">🏆</div><h1 class="fim-jogo-titulo">FIM DO JOGO!</h1><p class="fim-jogo-vencedor" id="fimJogoVencedor"></p><p style="color:rgba(255,255,255,.6)">Cartela Cheia - Super Prêmio!</p></div>
     <div class="toast" id="toast"></div>
     <div class="loading" id="loading"><div class="spinner"></div></div>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -157,7 +176,7 @@
     <script>
         const firebaseConfig={apiKey:"AIzaSyCPYcph6zvKD-pIrDSwlL378hJKQoz-r2I",authDomain:"bingo-16f47.firebaseapp.com",databaseURL:"https://bingo-16f47-default-rtdb.firebaseio.com",projectId:"bingo-16f47",storageBucket:"bingo-16f47.firebasestorage.app",messagingSenderId:"549011622250",appId:"1:549011622250:web:d86e8112d2d108f239fd13"};
         firebase.initializeApp(firebaseConfig);const db=firebase.database();
-        let salaId=null,sala=null,jogadorId=null,jogador=null,cartelaAtual=0,fotoBase64=null,touchStartX=0,touchEndX=0,vibrando=false;
+        let salaId=null,sala=null,jogadorId=null,jogador=null,cartelaAtual=0,fotoBase64=null,touchStartX=0,touchEndX=0,vibrando=false,ganhadores=[];
         document.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search);salaId=p.get('sala');if(!salaId){mostrarErro();return}const saved=localStorage.getItem('bingo_jogador_'+salaId);if(saved){jogadorId=saved;verificarJogadorExistente()}else carregarSala();setupSwipe()});
         const showToast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('active');setTimeout(()=>t.classList.remove('active'),3000)};
         const showLoading=()=>document.getElementById('loading').classList.add('active');
@@ -172,21 +191,17 @@
         async function entrarNoBingo(){const nome=document.getElementById('inputNome').value.trim(),sobrenome=document.getElementById('inputSobrenome').value.trim();if(!nome||!sobrenome){showToast('Preencha nome e sobrenome!');return}showLoading();try{const carts=[];for(let i=0;i<sala.cartelasPorJogador;i++)carts.push(gerarCartela(i));jogadorId=gerarId();jogador={salaId,nome,sobrenome,foto:fotoBase64,cartelas:carts,gritouBingo:false,cartelaVencedora:null,entradaEm:Date.now()};await db.ref('jogadores/'+jogadorId).set(jogador);localStorage.setItem('bingo_jogador_'+salaId,jogadorId);document.getElementById('telaCadastro').classList.remove('active');sala.jogando?iniciarJogo():mostrarAguardo();escutarMudancas();showToast('Bem-vindo, '+nome+'!')}catch(e){showToast('Erro: '+e.message)}hideLoading()}
         function mostrarAguardo(){document.getElementById('telaAguardo').classList.add('active');document.getElementById('telaJogo').classList.remove('active');document.getElementById('aguardoCartelas').textContent=jogador.cartelas.length;db.ref('jogadores').orderByChild('salaId').equalTo(salaId).on('value',snap=>{document.getElementById('aguardoJogadores').textContent=Object.keys(snap.val()||{}).length})}
         function iniciarJogo(){document.getElementById('telaAguardo').classList.remove('active');document.getElementById('telaJogo').classList.add('active');document.getElementById('nomeJogador').textContent=jogador.nome+' '+jogador.sobrenome;document.getElementById('cartelaTotalNum').textContent=jogador.cartelas.length;if(jogador.cartelas.length<=1)document.getElementById('swipeHint').style.display='none';renderizarCartelas();atualizarNavegacao();atualizarBotaoBingo()}
-        function renderizarCartelas(){const cont=document.getElementById('cartelasContainer');cont.innerHTML='';jogador.cartelas.forEach((cart,idx)=>{const div=document.createElement('div');div.className='cartela';div.id='cartela-'+idx;let grid='';for(let r=0;r<5;r++)for(let c=0;c<5;c++){const n=cart.numeros[r][c],marc=cart.marcados.includes(n),cor=n===0;let cls='numero';if(cor)cls+=' coringa';else if(marc)cls+=' marcado';grid+=`<div class="${cls}" id="num-${idx}-${n}" ${cor?'':`onclick="marcarNumero(${idx},${n})"`}>${cor?'V':n}</div>`}const tot=cart.marcados.filter(n=>n!==0).length;let dots='';for(let i=0;i<24;i++)dots+=`<div class="marcado-dot ${i<tot?'ativo':''}"></div>`;div.innerHTML=`<div class="cartela-card"><div class="bingo-header"><div class="bingo-letra">B</div><div class="bingo-letra">I</div><div class="bingo-letra">N</div><div class="bingo-letra">G</div><div class="bingo-letra">O</div></div><div class="cartela-grid">${grid}</div><div class="marcados-counter" id="counter-${idx}">${dots}<div class="marcados-text">${tot}/24 marcados</div></div></div>`;cont.appendChild(div)});const dots=document.getElementById('paginationDots');dots.innerHTML='';if(jogador.cartelas.length>1)jogador.cartelas.forEach((_,idx)=>{const d=document.createElement('div');d.className='pagination-dot '+(idx===0?'active':'');d.onclick=()=>irParaCartela(idx);dots.appendChild(d)})}
+        function renderizarCartelas(){const cont=document.getElementById('cartelasContainer');cont.innerHTML='';jogador.cartelas.forEach((cart,idx)=>{const div=document.createElement('div');div.className='cartela';div.id='cartela-'+idx;let grid='';for(let r=0;r<5;r++)for(let c=0;c<5;c++){const n=cart.numeros[r][c],marc=cart.marcados.includes(n),cor=n===0;let cls='numero';if(cor)cls+=' coringa';else if(marc)cls+=' marcado';grid+=`<div class="${cls}" id="num-${idx}-${n}" ${cor?'':`onclick="marcarNumero(${idx},${n})"`}>${cor?'V':n}</div>`}const tot=cart.marcados.filter(n=>n!==0).length;let dots='';for(let i=0;i<24;i++)dots+=`<div class="marcado-dot ${i<tot?'ativo':''}"></div>`;div.innerHTML=`<div class="cartela-card"><div class="bingo-header"><div class="bingo-letra">B</div><div class="bingo-letra">I</div><div class="bingo-letra">N</div><div class="bingo-letra">G</div><div class="bingo-letra">O</div></div><div class="cartela-grid">${grid}</div><div class="marcados-counter" id="counter-${idx}">${dots}<div class="marcados-text">${tot}/24 marcados</div></div></div>`;cont.appendChild(div)})}
         async function marcarNumero(cartIdx,num){const cart=jogador.cartelas[cartIdx],idx=cart.marcados.indexOf(num);if(idx>-1)cart.marcados.splice(idx,1);else cart.marcados.push(num);const el=document.getElementById('num-'+cartIdx+'-'+num);el.classList.toggle('marcado');playSound('ploc');if(navigator.vibrate)navigator.vibrate(50);atualizarContador(cartIdx);try{await db.ref('jogadores/'+jogadorId+'/cartelas/'+cartIdx+'/marcados').set(cart.marcados);if(cart.marcados.includes(num))await db.ref('salas/'+salaId+'/reacoes').push({nome:jogador.nome,foto:jogador.foto,numero:num,timestamp:Date.now()})}catch(e){showToast('Erro ao salvar')}atualizarBotaoBingo()}
         function atualizarContador(cartIdx){const cart=jogador.cartelas[cartIdx],tot=cart.marcados.filter(n=>n!==0).length,counter=document.getElementById('counter-'+cartIdx);counter.querySelectorAll('.marcado-dot').forEach((d,i)=>d.classList.toggle('ativo',i<tot));counter.querySelector('.marcados-text').textContent=tot+'/24 marcados'}
         function verificarSequencia(nums,marc){for(let i=0;i<5;i++)if(nums[i].every(n=>n===0||marc.includes(n)))return true;for(let c=0;c<5;c++)if(nums.map(l=>l[c]).every(n=>n===0||marc.includes(n)))return true;if([nums[0][0],nums[1][1],nums[2][2],nums[3][3],nums[4][4]].every(n=>n===0||marc.includes(n)))return true;if([nums[0][4],nums[1][3],nums[2][2],nums[3][1],nums[4][0]].every(n=>n===0||marc.includes(n)))return true;return false}
         function atualizarBotaoBingo(){const btn=document.getElementById('btnBingo');let pode=false;for(let i=0;i<jogador.cartelas.length;i++){if(verificarSequencia(jogador.cartelas[i].numeros,jogador.cartelas[i].marcados)){pode=true;break}}btn.classList.toggle('ativo',pode)}
         async function gritarBingo(){const btn=document.getElementById('btnBingo');if(!btn.classList.contains('ativo')){showToast('Complete uma sequência!');return}let cartVenc=-1;for(let i=0;i<jogador.cartelas.length;i++){if(verificarSequencia(jogador.cartelas[i].numeros,jogador.cartelas[i].marcados)){cartVenc=i;break}}if(cartVenc===-1){showToast('Nenhuma sequência!');return}playSound('bingo');if(navigator.vibrate)navigator.vibrate([100,50,100,50,100]);try{await db.ref('salas/'+salaId+'/alertasBingo').push({jogadorId,jogadorNome:jogador.nome+' '+jogador.sobrenome,foto:jogador.foto,cartelaIndex:cartVenc,timestamp:Date.now()});await db.ref('jogadores/'+jogadorId).update({gritouBingo:true,cartelaVencedora:cartVenc});document.getElementById('telaVerificacao').classList.add('active')}catch(e){showToast('Erro')}}
-        function escutarMudancas(){db.ref('salas/'+salaId).on('value',snap=>{const s=snap.val();if(!s)return;sala=s;if(s.jogando&&!document.getElementById('telaJogo').classList.contains('active'))iniciarJogo();if(s.girando){if(!vibrando&&navigator.vibrate){vibrando=true;vibraContinuo()}}else{vibrando=false}if(s.numeroAtual){mostrarNumeroAlerta(s.numeroAtual,s.tempoRestante||5);destacarNumero(s.numeroAtual)}else esconderNumeroAlerta();if(s.vencedor){if(jogador.gritouBingo)mostrarResultado(true,s.vencedor.nome===jogador.nome+' '+jogador.sobrenome);else mostrarResultado(false,false,s.vencedor.nome)}});db.ref('jogadores/'+jogadorId).on('value',snap=>{const d=snap.val();if(!d)return;const antigo=jogador?.gritouBingo;jogador=d;if(antigo&&!jogador.gritouBingo){document.getElementById('telaVerificacao').classList.remove('active');showToast('Bingo não validado!')}});db.ref('salas/'+salaId+'/reacoes').on('child_added',snap=>{const r=snap.val();if(r.nome!==jogador.nome)mostrarBalaoReacao(r)})}
+        function escutarMudancas(){db.ref('salas/'+salaId).on('value',snap=>{const s=snap.val();if(!s)return;sala=s;ganhadores=s.ganhadores||[];renderizarGanhadores();if(s.jogando&&!document.getElementById('telaJogo').classList.contains('active')){document.getElementById('fimJogoOverlay').classList.remove('active');iniciarJogo()}if(s.girando){document.getElementById('globoGirandoAviso').classList.add('active');if(!vibrando&&navigator.vibrate){vibrando=true;vibraContinuo()}}else{document.getElementById('globoGirandoAviso').classList.remove('active');vibrando=false}if(s.superVencedor){document.getElementById('telaVerificacao').classList.remove('active');document.getElementById('telaResultado').classList.remove('active');document.getElementById('fimJogoOverlay').classList.add('active');document.getElementById('fimJogoVencedor').textContent=s.superVencedor.nome+' venceu com CARTELA CHEIA!';criarConfetes();playSound('vitoria')}});db.ref('jogadores/'+jogadorId).on('value',snap=>{const d=snap.val();if(!d)return;const antigoBingo=jogador?.gritouBingo;jogador=d;renderizarCartelas();atualizarNavegacao();atualizarBotaoBingo();if(antigoBingo&&!jogador.gritouBingo){document.getElementById('telaVerificacao').classList.remove('active');showToast('Bingo não validado!')}});db.ref('salas/'+salaId+'/ganhadores').on('value',snap=>{const g=snap.val()||[];const meusNomes=jogador.nome+' '+jogador.sobrenome;const novoGanhador=g.find(x=>x.nome===meusNomes&&!ganhadores.find(y=>y.nome===meusNomes&&y.timestamp===x.timestamp));if(novoGanhador&&!novoGanhador.tipo.includes('CARTELA CHEIA')){document.getElementById('telaVerificacao').classList.remove('active');document.getElementById('resultadoIcon').textContent='🎉';document.getElementById('resultadoTitulo').textContent='VOCÊ GANHOU!';document.getElementById('resultadoTitulo').className='resultado-titulo venceu';document.getElementById('resultadoMsg').textContent=novoGanhador.tipo+' - Continue jogando!';document.getElementById('telaResultado').classList.add('active');criarConfetes();playSound('vitoria');db.ref('jogadores/'+jogadorId+'/gritouBingo').set(false)}ganhadores=g});db.ref('salas/'+salaId+'/reacoes').on('child_added',snap=>{const r=snap.val();if(r.nome!==jogador.nome)mostrarBalaoReacao(r)})}
+        function renderizarGanhadores(){const sec=document.getElementById('ganhadoresAviso'),lst=document.getElementById('ganhadoresMini');if(!ganhadores.length){sec.style.display='none';return}sec.style.display='block';lst.innerHTML=ganhadores.map(g=>`<div class="ganhador-mini"><img src="${g.foto||'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234ecdc4%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2240%22>👤</text></svg>'}"><span>${g.nome.split(' ')[0]}</span></div>`).join('')}
         function vibraContinuo(){if(!vibrando)return;if(navigator.vibrate)navigator.vibrate(200);setTimeout(vibraContinuo,300)}
-        function mostrarNumeroAlerta(num,tempo){const al=document.getElementById('numeroAlerta'),let_=getLetra(num);document.getElementById('alertaLetra').textContent=let_;document.getElementById('alertaNumero').textContent=num;document.getElementById('timerProgress').style.width=(tempo/5*100)+'%';al.classList.add('active')}
-        function esconderNumeroAlerta(){document.getElementById('numeroAlerta').classList.remove('active')}
-        const getLetra=n=>n<=15?'B':n<=30?'I':n<=45?'N':n<=60?'G':'O';
-        function destacarNumero(num){jogador.cartelas.forEach((_,idx)=>{const el=document.getElementById('num-'+idx+'-'+num);if(el&&!el.classList.contains('marcado')){el.classList.add('destaque');setTimeout(()=>el.classList.remove('destaque'),1000)}})}
         function mostrarBalaoReacao(r){const balao=document.createElement('div');balao.className='balao-reacao';balao.style.left=(10+Math.random()*70)+'%';balao.innerHTML=`<img class="balao-foto" src="${r.foto||'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234ecdc4%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2240%22>👤</text></svg>'}"><span class="balao-nome">${r.nome} ✅</span>`;document.body.appendChild(balao);setTimeout(()=>balao.remove(),2500)}
-        function mostrarResultado(participou,venceu,nomeVenc=''){document.getElementById('telaVerificacao').classList.remove('active');document.getElementById('telaResultado').classList.add('active');if(venceu){document.getElementById('resultadoIcon').textContent='🏆';document.getElementById('resultadoTitulo').textContent='VOCÊ VENCEU!';document.getElementById('resultadoTitulo').className='resultado-titulo venceu';document.getElementById('resultadoMsg').textContent='Parabéns!';document.getElementById('numerosPerdidos').innerHTML='';criarConfetes();playSound('vitoria')}else if(participou){document.getElementById('resultadoIcon').textContent='❌';document.getElementById('resultadoTitulo').textContent='BINGO INVÁLIDO';document.getElementById('resultadoTitulo').className='resultado-titulo perdeu';document.getElementById('resultadoMsg').textContent='Seu bingo não foi validado';document.getElementById('numerosPerdidos').innerHTML=''}else{document.getElementById('resultadoIcon').textContent='🎉';document.getElementById('resultadoTitulo').textContent='FIM DE JOGO';document.getElementById('resultadoTitulo').className='resultado-titulo';document.getElementById('resultadoMsg').textContent=nomeVenc+' venceu!';document.getElementById('numerosPerdidos').innerHTML=''}}
-        function voltarJogo(){document.querySelectorAll('.confetti').forEach(c=>c.remove());document.getElementById('telaResultado').classList.remove('active');jogador.gritouBingo=false;jogador.cartelaVencedora=null;if(!sala.jogando)mostrarAguardo()}
+        function voltarJogo(){document.querySelectorAll('.confetti').forEach(c=>c.remove());document.getElementById('telaResultado').classList.remove('active')}
         function atualizarNavegacao(){const tot=jogador.cartelas.length;document.getElementById('cartelaAtualNum').textContent=cartelaAtual+1;document.getElementById('btnAnterior').disabled=cartelaAtual===0;document.getElementById('btnProxima').disabled=cartelaAtual===tot-1;document.querySelectorAll('.pagination-dot').forEach((d,idx)=>d.classList.toggle('active',idx===cartelaAtual));document.getElementById('cartelasContainer').style.transform='translateX(-'+cartelaAtual*100+'%)'}
         const cartelaAnterior=()=>{if(cartelaAtual>0){cartelaAtual--;atualizarNavegacao()}};
         const proximaCartela=()=>{if(cartelaAtual<jogador.cartelas.length-1){cartelaAtual++;atualizarNavegacao()}};
