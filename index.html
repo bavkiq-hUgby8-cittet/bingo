@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Bingo dos Veloso - Painel do Operador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .logo::before {
+            content: "🎰 ";
+            -webkit-text-fill-color: initial;
+        }
+
+        .logo::after {
+            content: " 🎰";
+            -webkit-text-fill-color: initial;
+        }
+
+        .btn-reset {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #e63946, #c41e3a);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Tela Inicial */
+        .tela-inicial {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            border: none;
+            padding: 0;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        .slider-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ffd700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.6);
+        }
+
+        /* Salas Ativas */
+        .salas-lista {
+            display: grid;
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .sala-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sala-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .sala-nome {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .sala-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sala-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sala {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-iniciar {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-jogadores {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-encerrar {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .jogador-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .jogador-foto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .jogador-nome {
+            font-weight: 600;
+        }
+
+        .jogador-cartelas {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* Tela do Jogo */
+        .tela-jogo {
+            display: none;
+        }
+
+        .tela-jogo.active {
+            display: block;
+        }
+
+        .jogo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .jogo-titulo {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Número Sorteado */
+        .numero-sorteado-container {
+            position: relative;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            max-width: 600px;
+        }
+
+        .numero-sorteado {
+            font-size: 10rem;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-shadow: 0 10px 40px rgba(255, 215, 0, 0.6);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease;
+        }
+
+        .numero-sorteado.visible {
+            opacity: 1;
+            transform: scale(1);
+            animation: pulse-numero 1s ease infinite;
+        }
+
+        @keyframes pulse-numero {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .numero-sorteado.desaparecendo {
+            opacity: 0;
+            transform: scale(0) rotate(180deg);
+        }
+
+        .numero-letra {
+            font-size: 4rem;
+            color: #ffd700;
+            margin-right: 10px;
+        }
+
+        .aguardando-texto {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        .timer-visual {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .timer-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timer-dot.ativo {
+            background: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .btn-sortear {
+            display: block;
+            margin: 30px auto;
+            padding: 25px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e63946, #c41e3a);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(230, 57, 70, 0.4);
+        }
+
+        .btn-sortear:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(230, 57, 70, 0.6);
+        }
+
+        .btn-sortear:disabled {
+            background: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Grade de Números */
+        .numeros-sorteados-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .numeros-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 8px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .coluna-header {
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
+        .coluna-header.b { background: #e63946; }
+        .coluna-header.i { background: #f1c40f; color: #333; }
+        .coluna-header.n { background: #2ecc71; }
+        .coluna-header.g { background: #3498db; }
+        .coluna-header.o { background: #9b59b6; }
+
+        .numero-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .numero-cell.sorteado {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .contador-sorteados {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Alertas de Bingo */
+        .alertas-section {
+            margin-top: 40px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .alertas-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .alerta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .alerta-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alerta-foto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .alerta-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-verificar {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-ignorar {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Modal de Verificação */
+        .verificacao-cartela {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .verificacao-header {
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 10px;
+        }
+
+        .verificacao-header:nth-child(1) { color: #e63946; }
+        .verificacao-header:nth-child(2) { color: #f1c40f; }
+        .verificacao-header:nth-child(3) { color: #2ecc71; }
+        .verificacao-header:nth-child(4) { color: #3498db; }
+        .verificacao-header:nth-child(5) { color: #9b59b6; }
+
+        .verificacao-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .verificacao-cell.marcado-correto {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .verificacao-cell.nao-marcou {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .verificacao-cell.coringa {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #333;
+        }
+
+        .verificacao-cell.sequencia {
+            box-shadow: 0 0 0 3px #ffd700;
+        }
+
+        .resultado-verificacao {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .resultado-verificacao.valido {
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid #2ecc71;
+        }
+
+        .resultado-verificacao.invalido {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+        }
+
+        .numeros-perdidos {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .numero-perdido {
+            padding: 10px 20px;
+            background: rgba(231, 76, 60, 0.3);
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-vencedor {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #333;
+        }
+
+        .btn-continuar {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Tela de Vitória */
+        .tela-vitoria {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .tela-vitoria.active {
+            display: flex;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            top: -20px;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .vencedor-container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .vencedor-titulo {
+            font-family: 'Pacifico', cursive;
+            font-size: 5rem;
+            color: #ffd700;
+            text-shadow: 0 10px 40px rgba(255, 215, 0, 0.5);
+            margin-bottom: 30px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .vencedor-foto {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .vencedor-nome {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .btn-novo-jogo {
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 3000;
+            transition: transform 0.3s ease;
+        }
+
+        .toast.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsivo */
+        @media (max-width: 1024px) {
+            .tela-inicial {
+                grid-template-columns: 1fr;
+            }
+            
+            .numeros-grid {
+                grid-template-columns: repeat(10, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .numero-sorteado {
+                font-size: 6rem;
+            }
+            
+            .numero-letra {
+                font-size: 2.5rem;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="logo">Bingo dos Veloso</h1>
+        <button class="btn-reset" onclick="resetarTudo()">🔄 RESET TOTAL</button>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Tela Inicial -->
+        <div class="tela-inicial" id="telaInicial">
+            <!-- Criar Sala -->
+            <div class="card">
+                <h2 class="card-title">📝 CRIAR NOVA SALA</h2>
+                <div class="form-group">
+                    <label>Nome da Sala</label>
+                    <input type="text" id="nomeSala" placeholder='ex: "Bingo de Natal 2024"'>
+                </div>
+                <div class="form-group">
+                    <label>Cartelas por Jogador</label>
+                    <div class="slider-container">
+                        <input type="range" id="qtdCartelas" min="1" max="5" value="2" oninput="atualizarSlider()">
+                        <span class="slider-value" id="sliderValue">2</span>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="criarSala()">🎰 CRIAR SALA</button>
+            </div>
+
+            <!-- Salas Ativas -->
+            <div class="card">
+                <h2 class="card-title">🎯 SALAS ATIVAS</h2>
+                <div class="salas-lista" id="salasLista">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎱</div>
+                        <p>Nenhuma sala ativa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div class="tela-jogo" id="telaJogo">
+            <div class="jogo-header">
+                <h1 class="jogo-titulo" id="jogoTitulo">Bingo de Natal 2024</h1>
+                <button class="btn-reset" onclick="voltarInicio()" style="margin-top: 10px;">← Voltar</button>
+            </div>
+
+            <!-- Número Sorteado -->
+            <div class="numero-sorteado-container">
+                <div class="numero-sorteado" id="numeroSorteado">
+                    <span class="aguardando-texto">Clique em Sortear</span>
+                </div>
+                <div class="timer-visual" id="timerVisual">
+                    <div class="timer-dot"></div>
+                    <div class="timer-dot"></div>
+                    <div class="timer-dot"></div>
+                    <div class="timer-dot"></div>
+                    <div class="timer-dot"></div>
+                </div>
+            </div>
+
+            <button class="btn-sortear" id="btnSortear" onclick="sortearNumero()">
+                🎲 SORTEAR PRÓXIMO
+            </button>
+
+            <!-- Grade de Números Sorteados -->
+            <div class="numeros-sorteados-section">
+                <h3 class="section-title">📊 NÚMEROS JÁ SORTEADOS</h3>
+                <div id="gradeNumeros"></div>
+                <p class="contador-sorteados">Sorteados: <span id="contadorSorteados">0</span>/75</p>
+            </div>
+
+            <!-- Alertas de Bingo -->
+            <div class="alertas-section" id="alertasSection" style="display: none;">
+                <h3>🔔 ALERTAS DE BINGO</h3>
+                <div id="alertasLista"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Jogadores -->
+    <div class="modal" id="modalJogadores">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal('modalJogadores')">×</button>
+            <h2 class="card-title">👥 Jogadores da Sala</h2>
+            <div id="jogadoresLista"></div>
+            <p style="margin-top: 20px; color: rgba(255,255,255,0.6);" id="totalJogadores"></p>
+        </div>
+    </div>
+
+    <!-- Modal de Verificação -->
+    <div class="modal" id="modalVerificacao">
+        <div class="modal-content" style="max-width: 700px;">
+            <button class="modal-close" onclick="fecharModal('modalVerificacao')">×</button>
+            <h2 class="card-title">🔍 Verificando Bingo</h2>
+            <p id="verificacaoNome" style="font-size: 1.2rem; margin-bottom: 15px;"></p>
+            
+            <div class="verificacao-cartela" id="verificacaoCartela">
+                <div class="verificacao-header">B</div>
+                <div class="verificacao-header">I</div>
+                <div class="verificacao-header">N</div>
+                <div class="verificacao-header">G</div>
+                <div class="verificacao-header">O</div>
+            </div>
+
+            <div class="resultado-verificacao" id="resultadoVerificacao"></div>
+
+            <div class="modal-buttons" id="verificacaoButtons"></div>
+        </div>
+    </div>
+
+    <!-- Tela de Vitória -->
+    <div class="tela-vitoria" id="telaVitoria">
+        <div class="vencedor-container">
+            <h1 class="vencedor-titulo">🏆 VENCEDOR! 🏆</h1>
+            <img class="vencedor-foto" id="vencedorFoto" src="" alt="Vencedor">
+            <h2 class="vencedor-nome" id="vencedorNome"></h2>
+            <p id="vencedorCartela" style="color: rgba(255,255,255,0.7);"></p>
+            <button class="btn-novo-jogo" onclick="novoJogo()">🎰 NOVO JOGO</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPYcph6zvKD-pIrDSwlL378hJKQoz-r2I",
+            authDomain: "bingo-16f47.firebaseapp.com",
+            databaseURL: "https://bingo-16f47-default-rtdb.firebaseio.com",
+            projectId: "bingo-16f47",
+            storageBucket: "bingo-16f47.firebasestorage.app",
+            messagingSenderId: "549011622250",
+            appId: "1:549011622250:web:d86e8112d2d108f239fd13"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Estado
+        let salaAtual = null;
+        let numerosSorteados = [];
+        let countdownInterval = null;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarSalas();
+        });
+
+        // Funções de UI
+        function atualizarSlider() {
+            document.getElementById('sliderValue').textContent = document.getElementById('qtdCartelas').value;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        function fecharModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Gerar ID único
+        function gerarId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Criar Sala
+        async function criarSala() {
+            const nome = document.getElementById('nomeSala').value.trim();
+            const cartelas = parseInt(document.getElementById('qtdCartelas').value);
+
+            if (!nome) {
+                showToast('Digite o nome da sala!');
+                return;
+            }
+
+            showLoading();
+
+            const salaId = gerarId();
+            const sala = {
+                nome: nome,
+                cartelasPorJogador: cartelas,
+                ativa: true,
+                jogando: false,
+                numeroAtual: null,
+                tempoRestante: 0,
+                numerosSorteados: [],
+                ultimoSorteio: null,
+                vencedor: null,
+                criadaEm: Date.now()
+            };
+
+            try {
+                await db.ref('salas/' + salaId).set(sala);
+                document.getElementById('nomeSala').value = '';
+                showToast('Sala criada com sucesso!');
+            } catch (error) {
+                showToast('Erro ao criar sala: ' + error.message);
+            }
+
+            hideLoading();
+        }
+
+        // Carregar Salas
+        function carregarSalas() {
+            db.ref('salas').on('value', (snapshot) => {
+                const salas = snapshot.val() || {};
+                renderizarSalas(salas);
+            });
+        }
+
+        // Renderizar Salas
+        function renderizarSalas(salas) {
+            const lista = document.getElementById('salasLista');
+            const salasAtivas = Object.entries(salas).filter(([_, s]) => s.ativa);
+
+            if (salasAtivas.length === 0) {
+                lista.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎱</div>
+                        <p>Nenhuma sala ativa</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.innerHTML = salasAtivas.map(([id, sala]) => {
+                const url = `${window.location.origin}${window.location.pathname.replace('index.html', '')}jogador.html?sala=${id}`;
+                return `
+                    <div class="sala-card">
+                        <div class="sala-nome">🎰 ${sala.nome}</div>
+                        <div class="sala-info">
+                            <span>📋 ${sala.cartelasPorJogador} cartela(s)/jogador</span>
+                            <span id="jogadores-${id}">👥 Carregando...</span>
+                        </div>
+                        <div class="qr-container" id="qr-${id}"></div>
+                        <p style="text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 15px; word-break: break-all;">${url}</p>
+                        <div class="sala-buttons">
+                            ${sala.jogando ? 
+                                `<button class="btn-sala btn-iniciar" onclick="entrarJogo('${id}')">▶️ CONTINUAR</button>` :
+                                `<button class="btn-sala btn-iniciar" onclick="iniciarJogo('${id}')">▶️ INICIAR</button>`
+                            }
+                            <button class="btn-sala btn-jogadores" onclick="verJogadores('${id}')">👥 JOGADORES</button>
+                            <button class="btn-sala btn-encerrar" onclick="encerrarSala('${id}')">🗑️ ENCERRAR</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Gerar QR codes e contar jogadores
+            salasAtivas.forEach(([id, sala]) => {
+                const url = `${window.location.origin}${window.location.pathname.replace('index.html', '')}jogador.html?sala=${id}`;
+                const qrContainer = document.getElementById(`qr-${id}`);
+                qrContainer.innerHTML = '';
+                new QRCode(qrContainer, {
+                    text: url,
+                    width: 150,
+                    height: 150
+                });
+
+                // Contar jogadores
+                db.ref('jogadores').orderByChild('salaId').equalTo(id).on('value', (snap) => {
+                    const jogadores = snap.val() || {};
+                    const qtd = Object.keys(jogadores).length;
+                    const totalCartelas = qtd * sala.cartelasPorJogador;
+                    const el = document.getElementById(`jogadores-${id}`);
+                    if (el) el.textContent = `👥 ${qtd} jogadores • ${totalCartelas} cartelas`;
+                });
+            });
+        }
+
+        // Ver Jogadores
+        async function verJogadores(salaId) {
+            const snapshot = await db.ref('jogadores').orderByChild('salaId').equalTo(salaId).once('value');
+            const jogadores = snapshot.val() || {};
+            
+            const salaSnap = await db.ref('salas/' + salaId).once('value');
+            const sala = salaSnap.val();
+
+            const lista = document.getElementById('jogadoresLista');
+            const jogadoresArr = Object.entries(jogadores);
+
+            if (jogadoresArr.length === 0) {
+                lista.innerHTML = '<div class="empty-state"><p>Nenhum jogador ainda</p></div>';
+            } else {
+                lista.innerHTML = jogadoresArr.map(([id, j]) => `
+                    <div class="jogador-item">
+                        <img class="jogador-foto" src="${j.foto || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2240%22>👤</text></svg>'}" alt="${j.nome}">
+                        <div>
+                            <div class="jogador-nome">${j.nome} ${j.sobrenome}</div>
+                            <div class="jogador-cartelas">${j.cartelas ? j.cartelas.length : sala.cartelasPorJogador} cartelas</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('totalJogadores').textContent = 
+                `Total: ${jogadoresArr.length} jogadores, ${jogadoresArr.length * sala.cartelasPorJogador} cartelas`;
+
+            document.getElementById('modalJogadores').classList.add('active');
+        }
+
+        // Iniciar Jogo
+        async function iniciarJogo(salaId) {
+            showLoading();
+            
+            try {
+                await db.ref('salas/' + salaId).update({
+                    jogando: true,
+                    numeroAtual: null,
+                    numerosSorteados: [],
+                    vencedor: null,
+                    alertasBingo: null
+                });
+                
+                entrarJogo(salaId);
+            } catch (error) {
+                showToast('Erro ao iniciar: ' + error.message);
+            }
+
+            hideLoading();
+        }
+
+        // Entrar no Jogo
+        function entrarJogo(salaId) {
+            salaAtual = salaId;
+            
+            document.getElementById('telaInicial').style.display = 'none';
+            document.getElementById('telaJogo').classList.add('active');
+
+            // Buscar dados da sala
+            db.ref('salas/' + salaId).on('value', (snapshot) => {
+                const sala = snapshot.val();
+                if (!sala) return;
+
+                document.getElementById('jogoTitulo').textContent = sala.nome;
+                numerosSorteados = sala.numerosSorteados || [];
+                
+                renderizarGrade();
+                document.getElementById('contadorSorteados').textContent = numerosSorteados.length;
+
+                // Se tem vencedor, mostrar tela
+                if (sala.vencedor) {
+                    mostrarVencedor(sala.vencedor);
+                }
+            });
+
+            // Escutar alertas de bingo
+            db.ref('salas/' + salaId + '/alertasBingo').on('value', (snapshot) => {
+                const alertas = snapshot.val() || {};
+                renderizarAlertas(Object.entries(alertas));
+            });
+        }
+
+        // Voltar ao Início
+        function voltarInicio() {
+            salaAtual = null;
+            document.getElementById('telaInicial').style.display = 'grid';
+            document.getElementById('telaJogo').classList.remove('active');
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        }
+
+        // Renderizar Grade de Números
+        function renderizarGrade() {
+            const container = document.getElementById('gradeNumeros');
+            
+            let html = '<div class="numeros-grid">';
+            
+            // Headers
+            html += '<div class="coluna-header b">B</div>';
+            for (let i = 2; i <= 15; i++) html += '<div></div>';
+            
+            html += '<div class="coluna-header i">I</div>';
+            for (let i = 2; i <= 15; i++) html += '<div></div>';
+            
+            html += '<div class="coluna-header n">N</div>';
+            for (let i = 2; i <= 15; i++) html += '<div></div>';
+            
+            html += '<div class="coluna-header g">G</div>';
+            for (let i = 2; i <= 15; i++) html += '<div></div>';
+            
+            html += '<div class="coluna-header o">O</div>';
+            for (let i = 2; i <= 15; i++) html += '<div></div>';
+
+            // Números organizados por coluna
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 15; col++) {
+                    const num = row * 15 + col + 1;
+                    const sorteado = numerosSorteados.includes(num);
+                    html += `<div class="numero-cell ${sorteado ? 'sorteado' : ''}">${num}</div>`;
+                }
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Obter letra do número
+        function getLetra(num) {
+            if (num >= 1 && num <= 15) return 'B';
+            if (num >= 16 && num <= 30) return 'I';
+            if (num >= 31 && num <= 45) return 'N';
+            if (num >= 46 && num <= 60) return 'G';
+            return 'O';
+        }
+
+        // Sortear Número
+        async function sortearNumero() {
+            const btn = document.getElementById('btnSortear');
+            btn.disabled = true;
+
+            // Números disponíveis
+            const disponiveis = [];
+            for (let i = 1; i <= 75; i++) {
+                if (!numerosSorteados.includes(i)) {
+                    disponiveis.push(i);
+                }
+            }
+
+            if (disponiveis.length === 0) {
+                showToast('Todos os números já foram sorteados!');
+                btn.disabled = false;
+                return;
+            }
+
+            // Sortear
+            const numero = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+            const letra = getLetra(numero);
+
+            // Atualizar Firebase
+            await db.ref('salas/' + salaAtual).update({
+                numeroAtual: numero,
+                tempoRestante: 5,
+                numerosSorteados: [...numerosSorteados, numero],
+                ultimoSorteio: Date.now()
+            });
+
+            // Mostrar número
+            const numEl = document.getElementById('numeroSorteado');
+            numEl.innerHTML = `<span class="numero-letra">${letra}</span>${numero}`;
+            numEl.classList.remove('desaparecendo');
+            numEl.classList.add('visible');
+
+            // Tocar som
+            playSound('sortear');
+
+            // Iniciar countdown visual
+            iniciarCountdown();
+        }
+
+        // Countdown
+        function iniciarCountdown() {
+            const dots = document.querySelectorAll('.timer-dot');
+            let tempo = 5;
+
+            // Ativar todos os dots
+            dots.forEach(d => d.classList.add('ativo'));
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(async () => {
+                tempo--;
+                
+                // Desativar dot
+                dots[4 - tempo]?.classList.remove('ativo');
+
+                // Atualizar Firebase
+                await db.ref('salas/' + salaAtual + '/tempoRestante').set(tempo);
+
+                if (tempo === 0) {
+                    clearInterval(countdownInterval);
+                    
+                    // Esconder número
+                    const numEl = document.getElementById('numeroSorteado');
+                    numEl.classList.add('desaparecendo');
+                    
+                    setTimeout(() => {
+                        numEl.classList.remove('visible', 'desaparecendo');
+                        numEl.innerHTML = '<span class="aguardando-texto">Clique em Sortear</span>';
+                    }, 500);
+
+                    // Remover número atual do Firebase
+                    await db.ref('salas/' + salaAtual + '/numeroAtual').set(null);
+
+                    // Reativar botão
+                    document.getElementById('btnSortear').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Renderizar Alertas de Bingo
+        function renderizarAlertas(alertas) {
+            const section = document.getElementById('alertasSection');
+            const lista = document.getElementById('alertasLista');
+
+            if (alertas.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            lista.innerHTML = alertas.map(([id, alerta]) => `
+                <div class="alerta-item">
+                    <div class="alerta-info">
+                        <span style="font-size: 2rem;">🔔</span>
+                        <div>
+                            <strong>${alerta.jogadorNome}</strong>
+                            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+                                Cartela ${alerta.cartelaIndex + 1}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alerta-buttons">
+                        <button class="btn-verificar" onclick="verificarBingo('${alerta.jogadorId}', ${alerta.cartelaIndex}, '${id}')">
+                            ✅ VERIFICAR
+                        </button>
+                        <button class="btn-ignorar" onclick="ignorarBingo('${id}')">
+                            ❌ IGNORAR
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Verificar Bingo
+        async function verificarBingo(jogadorId, cartelaIndex, alertaId) {
+            showLoading();
+
+            try {
+                // Buscar dados do jogador
+                const jogadorSnap = await db.ref('jogadores/' + jogadorId).once('value');
+                const jogador = jogadorSnap.val();
+
+                if (!jogador || !jogador.cartelas) {
+                    showToast('Jogador não encontrado');
+                    hideLoading();
+                    return;
+                }
+
+                const cartela = jogador.cartelas[cartelaIndex];
+                const marcados = cartela.marcados || [];
+
+                // Verificar se perdeu algum número
+                const numerosPerdidos = [];
+                const numerosNaCartela = cartela.numeros.flat().filter(n => n !== 0);
+
+                for (const num of numerosSorteados) {
+                    if (numerosNaCartela.includes(num) && !marcados.includes(num)) {
+                        numerosPerdidos.push(num);
+                    }
+                }
+
+                // Verificar sequência
+                const sequenciaInfo = verificarSequencia(cartela.numeros, marcados);
+
+                // Renderizar cartela de verificação
+                renderizarVerificacao(jogador, cartela, marcados, numerosPerdidos, sequenciaInfo, alertaId);
+
+            } catch (error) {
+                showToast('Erro ao verificar: ' + error.message);
+            }
+
+            hideLoading();
+        }
+
+        // Verificar Sequência
+        function verificarSequencia(numeros, marcados) {
+            // Horizontal
+            for (let i = 0; i < 5; i++) {
+                const linha = numeros[i];
+                if (linha.every(n => n === 0 || marcados.includes(n))) {
+                    return { tipo: 'horizontal', linha: i };
+                }
+            }
+
+            // Vertical
+            for (let col = 0; col < 5; col++) {
+                const coluna = numeros.map(linha => linha[col]);
+                if (coluna.every(n => n === 0 || marcados.includes(n))) {
+                    return { tipo: 'vertical', coluna: col };
+                }
+            }
+
+            // Diagonal \
+            const diag1 = [numeros[0][0], numeros[1][1], numeros[2][2], numeros[3][3], numeros[4][4]];
+            if (diag1.every(n => n === 0 || marcados.includes(n))) {
+                return { tipo: 'diagonal1' };
+            }
+
+            // Diagonal /
+            const diag2 = [numeros[0][4], numeros[1][3], numeros[2][2], numeros[3][1], numeros[4][0]];
+            if (diag2.every(n => n === 0 || marcados.includes(n))) {
+                return { tipo: 'diagonal2' };
+            }
+
+            return null;
+        }
+
+        // Renderizar Verificação
+        function renderizarVerificacao(jogador, cartela, marcados, numerosPerdidos, sequenciaInfo, alertaId) {
+            document.getElementById('verificacaoNome').innerHTML = `
+                <strong>${jogador.nome} ${jogador.sobrenome}</strong> - Cartela ${cartela.id || ''}
+            `;
+
+            const grid = document.getElementById('verificacaoCartela');
+            grid.innerHTML = `
+                <div class="verificacao-header">B</div>
+                <div class="verificacao-header">I</div>
+                <div class="verificacao-header">N</div>
+                <div class="verificacao-header">G</div>
+                <div class="verificacao-header">O</div>
+            `;
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const num = cartela.numeros[row][col];
+                    let classes = 'verificacao-cell';
+                    
+                    if (num === 0) {
+                        classes += ' coringa';
+                    } else if (marcados.includes(num)) {
+                        classes += ' marcado-correto';
+                    } else if (numerosSorteados.includes(num)) {
+                        classes += ' nao-marcou';
+                    }
+
+                    // Destacar sequência
+                    if (sequenciaInfo) {
+                        if (sequenciaInfo.tipo === 'horizontal' && row === sequenciaInfo.linha) {
+                            classes += ' sequencia';
+                        }
+                        if (sequenciaInfo.tipo === 'vertical' && col === sequenciaInfo.coluna) {
+                            classes += ' sequencia';
+                        }
+                        if (sequenciaInfo.tipo === 'diagonal1' && row === col) {
+                            classes += ' sequencia';
+                        }
+                        if (sequenciaInfo.tipo === 'diagonal2' && row + col === 4) {
+                            classes += ' sequencia';
+                        }
+                    }
+
+                    grid.innerHTML += `<div class="${classes}">${num === 0 ? '⭐' : num}</div>`;
+                }
+            }
+
+            // Resultado
+            const resultado = document.getElementById('resultadoVerificacao');
+            const valido = numerosPerdidos.length === 0 && sequenciaInfo !== null;
+
+            if (valido) {
+                resultado.className = 'resultado-verificacao valido';
+                resultado.innerHTML = `
+                    <h3 style="color: #2ecc71; font-size: 1.5rem;">✅ BINGO VÁLIDO!</h3>
+                    <p>Sequência ${sequenciaInfo.tipo === 'horizontal' ? 'na linha ' + (sequenciaInfo.linha + 1) :
+                        sequenciaInfo.tipo === 'vertical' ? 'na coluna ' + (sequenciaInfo.coluna + 1) :
+                        sequenciaInfo.tipo === 'diagonal1' ? 'diagonal ↘' : 'diagonal ↗'}</p>
+                `;
+            } else {
+                resultado.className = 'resultado-verificacao invalido';
+                let motivo = '';
+                if (numerosPerdidos.length > 0) {
+                    motivo = `<p>Perdeu ${numerosPerdidos.length} número(s):</p>
+                        <div class="numeros-perdidos">
+                            ${numerosPerdidos.map(n => `<span class="numero-perdido">${getLetra(n)} ${n}</span>`).join('')}
+                        </div>`;
+                } else if (!sequenciaInfo) {
+                    motivo = '<p>Não completou nenhuma sequência</p>';
+                }
+                resultado.innerHTML = `
+                    <h3 style="color: #e74c3c; font-size: 1.5rem;">❌ BINGO INVÁLIDO!</h3>
+                    ${motivo}
+                `;
+            }
+
+            // Botões
+            const buttons = document.getElementById('verificacaoButtons');
+            if (valido) {
+                buttons.innerHTML = `
+                    <button class="btn-vencedor" onclick="declararVencedor('${jogador.nome} ${jogador.sobrenome}', '${jogador.foto || ''}', '${alertaId}')">
+                        🏆 DECLARAR VENCEDOR
+                    </button>
+                    <button class="btn-continuar" onclick="fecharModal('modalVerificacao')">
+                        ▶️ CONTINUAR JOGO
+                    </button>
+                `;
+            } else {
+                buttons.innerHTML = `
+                    <button class="btn-continuar" onclick="fecharModal('modalVerificacao'); ignorarBingo('${alertaId}')">
+                        ▶️ CONTINUAR JOGO
+                    </button>
+                `;
+            }
+
+            document.getElementById('modalVerificacao').classList.add('active');
+        }
+
+        // Ignorar Bingo
+        async function ignorarBingo(alertaId) {
+            await db.ref('salas/' + salaAtual + '/alertasBingo/' + alertaId).remove();
+        }
+
+        // Declarar Vencedor
+        async function declararVencedor(nome, foto, alertaId) {
+            fecharModal('modalVerificacao');
+
+            await db.ref('salas/' + salaAtual).update({
+                jogando: false,
+                vencedor: { nome, foto }
+            });
+
+            // Remover alerta
+            await db.ref('salas/' + salaAtual + '/alertasBingo/' + alertaId).remove();
+
+            mostrarVencedor({ nome, foto });
+        }
+
+        // Mostrar Vencedor
+        function mostrarVencedor(vencedor) {
+            document.getElementById('vencedorNome').textContent = vencedor.nome;
+            document.getElementById('vencedorFoto').src = vencedor.foto || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23ffd700%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2250%22>🏆</text></svg>';
+            
+            document.getElementById('telaVitoria').classList.add('active');
+
+            // Confetes
+            criarConfetes();
+
+            // Som de vitória
+            playSound('vitoria');
+        }
+
+        // Criar Confetes
+        function criarConfetes() {
+            const cores = ['#e63946', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#ffd700'];
+            const container = document.getElementById('telaVitoria');
+
+            for (let i = 0; i < 100; i++) {
+                const confete = document.createElement('div');
+                confete.className = 'confetti';
+                confete.style.left = Math.random() * 100 + '%';
+                confete.style.background = cores[Math.floor(Math.random() * cores.length)];
+                confete.style.animationDelay = Math.random() * 3 + 's';
+                confete.style.animationDuration = (2 + Math.random() * 2) + 's';
+                container.appendChild(confete);
+            }
+        }
+
+        // Novo Jogo
+        async function novoJogo() {
+            // Limpar confetes
+            document.querySelectorAll('.confetti').forEach(c => c.remove());
+            
+            document.getElementById('telaVitoria').classList.remove('active');
+
+            // Resetar sala
+            await db.ref('salas/' + salaAtual).update({
+                jogando: true,
+                numeroAtual: null,
+                tempoRestante: 0,
+                numerosSorteados: [],
+                vencedor: null,
+                alertasBingo: null
+            });
+
+            // Resetar cartelas dos jogadores
+            const jogadoresSnap = await db.ref('jogadores').orderByChild('salaId').equalTo(salaAtual).once('value');
+            const jogadores = jogadoresSnap.val() || {};
+
+            for (const [id, jogador] of Object.entries(jogadores)) {
+                if (jogador.cartelas) {
+                    const cartelasResetadas = jogador.cartelas.map(c => ({
+                        ...c,
+                        marcados: [0],
+                        totalMarcados: 1
+                    }));
+                    await db.ref('jogadores/' + id + '/cartelas').set(cartelasResetadas);
+                    await db.ref('jogadores/' + id + '/gritouBingo').set(false);
+                }
+            }
+
+            showToast('Novo jogo iniciado!');
+        }
+
+        // Encerrar Sala
+        async function encerrarSala(salaId) {
+            if (!confirm('Tem certeza que deseja encerrar esta sala? Todos os jogadores serão removidos.')) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // Remover jogadores da sala
+                const jogadoresSnap = await db.ref('jogadores').orderByChild('salaId').equalTo(salaId).once('value');
+                const jogadores = jogadoresSnap.val() || {};
+                
+                for (const id of Object.keys(jogadores)) {
+                    await db.ref('jogadores/' + id).remove();
+                }
+
+                // Desativar sala
+                await db.ref('salas/' + salaId).update({ ativa: false });
+
+                showToast('Sala encerrada!');
+            } catch (error) {
+                showToast('Erro ao encerrar: ' + error.message);
+            }
+
+            hideLoading();
+        }
+
+        // Reset Total
+        async function resetarTudo() {
+            if (!confirm('ATENÇÃO: Isso irá apagar TODAS as salas e jogadores. Continuar?')) {
+                return;
+            }
+
+            if (!confirm('Tem certeza mesmo? Esta ação não pode ser desfeita!')) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                await db.ref('salas').remove();
+                await db.ref('jogadores').remove();
+                
+                if (salaAtual) {
+                    voltarInicio();
+                    salaAtual = null;
+                }
+
+                showToast('Tudo foi resetado!');
+            } catch (error) {
+                showToast('Erro ao resetar: ' + error.message);
+            }
+
+            hideLoading();
+        }
+
+        // Sons (usando Web Audio API para gerar sons simples)
+        function playSound(tipo) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (tipo === 'sortear') {
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (tipo === 'vitoria') {
+                    // Melodia simples de vitória
+                    const notas = [523, 659, 784, 1047];
+                    notas.forEach((nota, i) => {
+                        setTimeout(() => {
+                            const osc2 = ctx.createOscillator();
+                            const gain2 = ctx.createGain();
+                            osc2.connect(gain2);
+                            gain2.connect(ctx.destination);
+                            osc2.frequency.value = nota;
+                            gain2.gain.setValueAtTime(0.3, ctx.currentTime);
+                            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                            osc2.start(ctx.currentTime);
+                            osc2.stop(ctx.currentTime + 0.3);
+                        }, i * 150);
+                    });
+                }
+            } catch (e) {
+                // Ignorar erros de áudio
+            }
+        }
+    </script>
+</body>
+</html>
