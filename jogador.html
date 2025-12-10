@@ -3,1678 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎰 Bingo dos Veloso - Jogar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>🎰 Bingo dos Veloso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            color: white;
-            overflow-x: hidden;
-            touch-action: manipulation;
-        }
-
-        /* Forçar Portrait */
-        @media screen and (orientation: landscape) {
-            body::before {
-                content: "📱 Por favor, gire o celular para o modo retrato";
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: #1a1a2e;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                font-size: 1.5rem;
-                padding: 40px;
-                z-index: 10000;
-            }
-        }
-
-        /* Header compacto */
-        .header {
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: 'Pacifico', cursive;
-            font-size: 1.3rem;
-            background: linear-gradient(135deg, #ffd700, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .sala-nome {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Container */
-        .container {
-            padding: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Tela de Cadastro */
-        .tela-cadastro {
-            padding: 20px;
-        }
-
-        .cadastro-title {
-            font-family: 'Pacifico', cursive;
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #ffd700, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .foto-section {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .foto-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .foto-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .foto-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .btn-foto {
-            padding: 10px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: transparent;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-foto:active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .info-cartelas {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 15px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .btn-entrar {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
-        }
-
-        .btn-entrar:active {
-            transform: scale(0.98);
-        }
-
-        /* Tela de Aguardo */
-        .tela-aguardo {
-            display: none;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .tela-aguardo.active {
-            display: block;
-        }
-
-        .aguardo-icon {
-            font-size: 5rem;
-            margin-bottom: 30px;
-            animation: bounce 1s ease infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .aguardo-text {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-
-        .aguardo-subtext {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Tela do Jogo */
-        .tela-jogo {
-            display: none;
-        }
-
-        .tela-jogo.active {
-            display: block;
-        }
-
-        /* Alerta de Número */
-        .numero-alerta {
-            display: none;
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #e63946, #c41e3a);
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            font-weight: 900;
-            z-index: 100;
-            box-shadow: 0 10px 40px rgba(230, 57, 70, 0.5);
-            animation: pulse-alerta 0.5s ease infinite;
-        }
-
-        .numero-alerta.active {
-            display: block;
-        }
-
-        @keyframes pulse-alerta {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.05); }
-        }
-
-        .timer-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .timer-progress {
-            height: 100%;
-            background: white;
-            transition: width 1s linear;
-        }
-
-        /* Navegação de Cartelas */
-        .cartela-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-        }
-
-        .nav-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:active {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .nav-btn:disabled {
-            opacity: 0.3;
-            cursor: default;
-        }
-
-        .cartela-info {
-            text-align: center;
-        }
-
-        .jogador-nome {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .cartela-numero {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Container de Cartelas (para swipe) */
-        .cartelas-wrapper {
-            overflow: hidden;
-            position: relative;
-        }
-
-        .cartelas-container {
-            display: flex;
-            transition: transform 0.3s ease;
-        }
-
-        .cartela {
-            min-width: 100%;
-            padding: 0 5px;
-        }
-
-        /* Cartela Visual */
-        .cartela-card {
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .bingo-header {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .bingo-letra {
-            text-align: center;
-            font-family: 'Pacifico', cursive;
-            font-size: 1.8rem;
-            font-weight: 700;
-            padding: 8px 0;
-        }
-
-        .bingo-letra:nth-child(1) { color: #e63946; }
-        .bingo-letra:nth-child(2) { color: #f1c40f; }
-        .bingo-letra:nth-child(3) { color: #2ecc71; }
-        .bingo-letra:nth-child(4) { color: #3498db; }
-        .bingo-letra:nth-child(5) { color: #9b59b6; }
-
-        .cartela-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-        }
-
-        .numero {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: #f8f9fa;
-            color: #333;
-            border: 3px solid #e9ecef;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .numero:active {
-            transform: scale(0.95);
-        }
-
-        .numero.marcado {
-            background: linear-gradient(135deg, #e63946, #c41e3a);
-            color: white;
-            border-color: #c41e3a;
-            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
-            animation: stamp 0.3s ease;
-        }
-
-        @keyframes stamp {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15) rotate(5deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .numero.coringa {
-            background: linear-gradient(135deg, #ffd700, #ffa500);
-            color: #333;
-            border-color: #ff8c00;
-            font-family: 'Pacifico', cursive;
-            font-size: 1.2rem;
-            cursor: default;
-        }
-
-        .numero.destaque {
-            animation: destaque 0.5s ease;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-        }
-
-        @keyframes destaque {
-            0%, 100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
-            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
-        }
-
-        /* Contador de Marcados */
-        .marcados-counter {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .marcado-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #e9ecef;
-            transition: all 0.3s ease;
-        }
-
-        .marcado-dot.ativo {
-            background: #e63946;
-        }
-
-        .marcados-text {
-            width: 100%;
-            text-align: center;
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        /* Botão BINGO */
-        .btn-bingo {
-            width: 100%;
-            padding: 20px;
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: not-allowed;
-            transition: all 0.3s ease;
-            margin-top: 15px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .btn-bingo.ativo {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            cursor: pointer;
-            animation: pulse-bingo 1s ease infinite;
-            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.5);
-        }
-
-        @keyframes pulse-bingo {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .btn-bingo:active.ativo {
-            transform: scale(0.98);
-        }
-
-        /* Indicador de Swipe */
-        .swipe-hint {
-            text-align: center;
-            padding: 10px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-        }
-
-        /* Dots de Paginação */
-        .pagination-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .pagination-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .pagination-dot.active {
-            background: #ffd700;
-            transform: scale(1.2);
-        }
-
-        /* Tela de Aguardando Verificação */
-        .tela-verificacao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .tela-verificacao.active {
-            display: flex;
-        }
-
-        .verificacao-icon {
-            font-size: 5rem;
-            margin-bottom: 30px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .verificacao-text {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-
-        /* Tela de Resultado */
-        .tela-resultado {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            z-index: 300;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .tela-resultado.active {
-            display: flex;
-        }
-
-        .resultado-icon {
-            font-size: 6rem;
-            margin-bottom: 20px;
-        }
-
-        .resultado-titulo {
-            font-family: 'Pacifico', cursive;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .resultado-titulo.venceu {
-            color: #ffd700;
-            text-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .resultado-titulo.perdeu {
-            color: #e74c3c;
-        }
-
-        .resultado-msg {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 30px;
-        }
-
-        .numeros-perdidos {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-
-        .numero-perdido {
-            padding: 10px 20px;
-            background: rgba(231, 76, 60, 0.3);
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        .btn-voltar {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        /* Confetes */
-        .confetti {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            top: -20px;
-            animation: fall 3s linear infinite;
-            z-index: 400;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(720deg);
-            }
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            padding: 15px 30px;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 500;
-            transition: transform 0.3s ease;
-        }
-
-        .toast.active {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Loading */
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 600;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #ffd700;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* Erro */
-        .tela-erro {
-            display: none;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .tela-erro.active {
-            display: block;
-        }
-
-        .erro-icon {
-            font-size: 5rem;
-            margin-bottom: 20px;
-        }
-
-        /* Responsivo para telas muito pequenas */
-        @media (max-width: 350px) {
-            .numero {
-                font-size: 1.2rem;
-            }
-            
-            .bingo-letra {
-                font-size: 1.4rem;
-            }
-
-            .btn-bingo {
-                font-size: 1.4rem;
-                padding: 15px;
-            }
-        }
-
-        /* Telas maiores */
-        @media (min-width: 500px) {
-            .numero {
-                font-size: 2rem;
-            }
-
-            .bingo-letra {
-                font-size: 2.2rem;
-            }
-        }
-
-        /* Hidden file input */
-        .hidden-input {
-            display: none;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        :root{--red:#ff6b6b;--cyan:#4ecdc4;--yellow:#ffe66d;--purple:#a855f7;--green:#22c55e;--blue:#3b82f6}
+        body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;min-height:-webkit-fill-available;color:#fff;overflow-x:hidden;touch-action:manipulation}
+        @media screen and (orientation:landscape){body::before{content:"📱 Gire para retrato";position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:1.5rem;padding:40px;z-index:10000;text-align:center}}
+        .header{padding:15px 20px;background:rgba(0,0,0,.3);display:flex;justify-content:space-between;align-items:center}
+        .logo{font-family:'Bangers',cursive;font-size:1.5rem;background:linear-gradient(135deg,#ffd700,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .sala-nome{font-size:.8rem;color:rgba(255,255,255,.6);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .container{padding:15px;max-width:500px;margin:0 auto}
+        .tela{display:none}.tela.active{display:block}
+        .cadastro-title{font-family:'Bangers',cursive;font-size:2.5rem;text-align:center;margin-bottom:30px;background:linear-gradient(135deg,#ffd700,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;font-weight:600}
+        .form-group input{width:100%;padding:15px 20px;border:2px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-size:1rem}
+        .form-group input:focus{outline:none;border-color:var(--yellow);box-shadow:0 0 20px rgba(255,230,109,.3)}
+        .form-group input::placeholder{color:rgba(255,255,255,.5)}
+        .foto-section{text-align:center;margin:30px 0}
+        .foto-preview{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.1);margin:0 auto 15px;display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;border:3px solid rgba(255,255,255,.3)}
+        .foto-preview img{width:100%;height:100%;object-fit:cover}
+        .foto-buttons{display:flex;gap:10px;justify-content:center}
+        .btn-foto{padding:10px 20px;border:2px solid rgba(255,255,255,.3);border-radius:10px;background:transparent;color:#fff;font-weight:600;cursor:pointer}
+        .btn-foto:active{background:rgba(255,255,255,.2)}
+        .info-cartelas{text-align:center;padding:20px;background:rgba(255,215,0,.1);border-radius:15px;margin:20px 0;border:1px solid rgba(255,215,0,.3)}
+        .btn-entrar{width:100%;padding:18px;background:linear-gradient(135deg,var(--green),#16a34a);border:none;border-radius:15px;color:#fff;font-size:1.2rem;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(34,197,94,.4)}
+        .btn-entrar:active{transform:scale(.98)}
+        .aguardo-icon{font-size:5rem;margin-bottom:30px;animation:bounce 1s ease infinite;text-align:center}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        .aguardo-text{font-size:1.5rem;margin-bottom:20px;text-align:center}
+        .aguardo-subtext{color:rgba(255,255,255,.6);text-align:center}
+        .numero-alerta{display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e63946,#c41e3a);padding:15px 30px;border-radius:15px;font-size:1.5rem;font-weight:900;z-index:100;box-shadow:0 10px 40px rgba(230,57,70,.5);animation:pulse-alerta .5s ease infinite}
+        .numero-alerta.active{display:block}
+        @keyframes pulse-alerta{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
+        .timer-bar{height:4px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:10px;overflow:hidden}
+        .timer-progress{height:100%;background:#fff;transition:width 1s linear}
+        .cartela-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding:10px;background:rgba(255,255,255,.1);border-radius:12px}
+        .nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .nav-btn:active{background:rgba(255,255,255,.4)}
+        .nav-btn:disabled{opacity:.3}
+        .cartela-info{text-align:center}
+        .jogador-nome{font-weight:700;font-size:1.1rem}
+        .cartela-numero{font-size:.9rem;color:rgba(255,255,255,.6)}
+        .cartelas-wrapper{overflow:hidden;position:relative}
+        .cartelas-container{display:flex;transition:transform .3s ease}
+        .cartela{min-width:100%;padding:0 5px}
+        .cartela-card{background:#fff;border-radius:20px;padding:15px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+        .bingo-header{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px}
+        .bingo-letra{text-align:center;font-family:'Bangers',cursive;font-size:1.8rem;font-weight:700;padding:8px 0}
+        .bingo-letra:nth-child(1){color:#ef4444}
+        .bingo-letra:nth-child(2){color:#f59e0b}
+        .bingo-letra:nth-child(3){color:#22c55e}
+        .bingo-letra:nth-child(4){color:#3b82f6}
+        .bingo-letra:nth-child(5){color:#a855f7}
+        .cartela-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+        .numero{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;background:#f8f9fa;color:#333;border:3px solid #e9ecef;border-radius:12px;cursor:pointer;transition:.2s;user-select:none}
+        .numero:active{transform:scale(.95)}
+        .numero.marcado{background:linear-gradient(135deg,#e63946,#c41e3a);color:#fff;border-color:#c41e3a;box-shadow:0 4px 12px rgba(230,57,70,.4);animation:stamp .3s ease}
+        @keyframes stamp{0%{transform:scale(1)}50%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+        .numero.coringa{background:linear-gradient(135deg,#ffd700,#ffa500);color:#333;border-color:#ff8c00;font-family:'Bangers',cursive;font-size:1.2rem;cursor:default}
+        .numero.destaque{animation:destaque .5s ease;box-shadow:0 0 20px rgba(255,215,0,.8)}
+        @keyframes destaque{0%,100%{box-shadow:0 0 0 rgba(255,215,0,0)}50%{box-shadow:0 0 30px rgba(255,215,0,1)}}
+        .marcados-counter{display:flex;justify-content:center;align-items:center;gap:5px;margin:15px 0;flex-wrap:wrap}
+        .marcado-dot{width:12px;height:12px;border-radius:50%;background:#e9ecef}
+        .marcado-dot.ativo{background:#e63946}
+        .marcados-text{width:100%;text-align:center;color:#666;font-size:.9rem;margin-top:5px}
+        .btn-bingo{width:100%;padding:20px;font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#95a5a6,#7f8c8d);color:#fff;border:none;border-radius:15px;cursor:not-allowed;margin-top:15px;text-transform:uppercase;letter-spacing:3px}
+        .btn-bingo.ativo{background:linear-gradient(135deg,var(--green),#16a34a);cursor:pointer;animation:pulse-bingo 1s ease infinite;box-shadow:0 8px 30px rgba(34,197,94,.5)}
+        @keyframes pulse-bingo{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+        .btn-bingo:active.ativo{transform:scale(.98)}
+        .swipe-hint{text-align:center;padding:10px;color:rgba(255,255,255,.5);font-size:.9rem}
+        .pagination-dots{display:flex;justify-content:center;gap:8px;margin-top:15px}
+        .pagination-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3)}
+        .pagination-dot.active{background:#ffd700;transform:scale(1.2)}
+        .tela-verificacao{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px}
+        .tela-verificacao.active{display:flex}
+        .verificacao-icon{font-size:5rem;margin-bottom:30px;animation:spin 2s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .verificacao-text{font-size:1.5rem;margin-bottom:20px}
+        .tela-resultado{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);z-index:300;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px}
+        .tela-resultado.active{display:flex}
+        .resultado-icon{font-size:6rem;margin-bottom:20px}
+        .resultado-titulo{font-family:'Bangers',cursive;font-size:2.5rem;margin-bottom:20px}
+        .resultado-titulo.venceu{color:#ffd700;text-shadow:0 5px 20px rgba(255,215,0,.5)}
+        .resultado-titulo.perdeu{color:#e74c3c}
+        .resultado-msg{font-size:1.2rem;color:rgba(255,255,255,.8);margin-bottom:30px}
+        .numeros-perdidos{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0}
+        .numero-perdido{padding:10px 20px;background:rgba(231,76,60,.3);border-radius:10px;font-weight:700}
+        .btn-voltar{padding:15px 40px;background:linear-gradient(135deg,var(--blue),#2563eb);border:none;border-radius:12px;color:#fff;font-size:1.1rem;font-weight:600;cursor:pointer;margin-top:20px}
+        .confetti{position:fixed;width:12px;height:12px;top:-20px;animation:fall 3s linear infinite;z-index:400}
+        @keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
+        .balao-reacao{position:fixed;bottom:150px;padding:10px 15px;background:linear-gradient(135deg,rgba(34,197,94,.95),rgba(22,163,74,.95));border-radius:50px;display:flex;align-items:center;gap:8px;animation:pop-balao .5s cubic-bezier(.68,-.55,.265,1.55),fade-balao .5s ease 2s forwards;box-shadow:0 5px 20px rgba(34,197,94,.5);z-index:150}
+        @keyframes pop-balao{0%{transform:scale(0) translateY(50px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+        @keyframes fade-balao{to{opacity:0;transform:translateY(-30px) scale(.5)}}
+        .balao-foto{width:35px;height:35px;border-radius:50%;object-fit:cover;border:2px solid #fff}
+        .balao-nome{font-weight:700;color:#fff;font-size:.9rem}
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);padding:15px 30px;background:rgba(0,0,0,.9);color:#fff;border-radius:12px;font-weight:600;z-index:500;transition:transform .3s ease}
+        .toast.active{transform:translateX(-50%) translateY(0)}
+        .loading{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:600;align-items:center;justify-content:center}
+        .loading.active{display:flex}
+        .spinner{width:50px;height:50px;border:4px solid rgba(255,255,255,.2);border-top-color:#ffd700;border-radius:50%;animation:spin 1s linear infinite}
+        .tela-erro{text-align:center;padding:60px 20px}
+        .erro-icon{font-size:5rem;margin-bottom:20px}
+        .hidden-input{display:none}
+        @media(max-width:350px){.numero{font-size:1.2rem}.bingo-letra{font-size:1.4rem}.btn-bingo{font-size:1.4rem;padding:15px}}
+        @media(min-width:500px){.numero{font-size:2rem}.bingo-letra{font-size:2.2rem}}
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <span class="logo">🎰 Bingo</span>
         <span class="sala-nome" id="salaNome">Carregando...</span>
     </header>
-
-    <!-- Container -->
     <div class="container">
-        <!-- Tela de Erro -->
-        <div class="tela-erro" id="telaErro">
-            <div class="erro-icon">❌</div>
-            <h2>Sala não encontrada</h2>
-            <p style="color: rgba(255,255,255,0.6); margin-top: 15px;">
-                Verifique o link ou escaneie o QR code novamente.
-            </p>
-        </div>
-
-        <!-- Tela de Cadastro -->
-        <div class="tela-cadastro" id="telaCadastro">
+        <div class="tela" id="telaErro"><div class="erro-icon">❌</div><h2>Sala não encontrada</h2><p style="color:rgba(255,255,255,.6);margin-top:15px">Verifique o link ou QR code</p></div>
+        <div class="tela active" id="telaCadastro">
             <h1 class="cadastro-title">🎰 Entre no Bingo!</h1>
-
-            <div class="form-group">
-                <label>👤 Nome *</label>
-                <input type="text" id="inputNome" placeholder="Seu nome" autocomplete="given-name">
-            </div>
-
-            <div class="form-group">
-                <label>👤 Sobrenome *</label>
-                <input type="text" id="inputSobrenome" placeholder="Seu sobrenome" autocomplete="family-name">
-            </div>
-
+            <div class="form-group"><label>👤 Nome *</label><input type="text" id="inputNome" placeholder="Seu nome" autocomplete="given-name"></div>
+            <div class="form-group"><label>👤 Sobrenome *</label><input type="text" id="inputSobrenome" placeholder="Seu sobrenome" autocomplete="family-name"></div>
             <div class="foto-section">
-                <label style="display: block; margin-bottom: 15px; font-weight: 600;">📷 Sua Foto (opcional)</label>
+                <label style="display:block;margin-bottom:15px;font-weight:600">📷 Sua Foto (opcional)</label>
                 <div class="foto-preview" id="fotoPreview">👤</div>
-                <div class="foto-buttons">
-                    <button class="btn-foto" onclick="tirarFoto()">📸 Tirar</button>
-                    <button class="btn-foto" onclick="escolherFoto()">🖼️ Escolher</button>
-                </div>
+                <div class="foto-buttons"><button class="btn-foto" onclick="document.getElementById('inputCamera').click()">📸 Tirar</button><button class="btn-foto" onclick="document.getElementById('inputFoto').click()">🖼️ Escolher</button></div>
                 <input type="file" id="inputFoto" class="hidden-input" accept="image/*" onchange="handleFoto(event)">
                 <input type="file" id="inputCamera" class="hidden-input" accept="image/*" capture="user" onchange="handleFoto(event)">
             </div>
-
-            <div class="info-cartelas">
-                <p>ℹ️ Você receberá <strong id="qtdCartelas">2</strong> cartela(s)</p>
-            </div>
-
+            <div class="info-cartelas"><p>ℹ️ Você receberá <strong id="qtdCartelas">2</strong> cartela(s)</p></div>
             <button class="btn-entrar" onclick="entrarNoBingo()">🎰 ENTRAR NO BINGO</button>
         </div>
-
-        <!-- Tela de Aguardo -->
-        <div class="tela-aguardo" id="telaAguardo">
+        <div class="tela" id="telaAguardo">
             <div class="aguardo-icon">⏳</div>
             <h2 class="aguardo-text">Aguardando início...</h2>
             <p class="aguardo-subtext">Suas cartelas estão prontas!</p>
-            <p class="aguardo-subtext" style="margin-top: 30px;">
-                📋 Você tem <strong id="aguardoCartelas">2</strong> cartela(s)
-            </p>
-            <p class="aguardo-subtext" style="margin-top: 20px;">
-                Jogadores: <span id="aguardoJogadores">0</span>
-            </p>
+            <p class="aguardo-subtext" style="margin-top:30px">📋 Você tem <strong id="aguardoCartelas">2</strong> cartela(s)</p>
+            <p class="aguardo-subtext" style="margin-top:20px">Jogadores: <span id="aguardoJogadores">0</span></p>
         </div>
-
-        <!-- Tela do Jogo -->
-        <div class="tela-jogo" id="telaJogo">
-            <!-- Alerta de Número -->
-            <div class="numero-alerta" id="numeroAlerta">
-                <span id="alertaLetra">B</span> <span id="alertaNumero">12</span>
-                <div class="timer-bar">
-                    <div class="timer-progress" id="timerProgress"></div>
-                </div>
-            </div>
-
-            <!-- Navegação de Cartelas -->
-            <div class="cartela-nav">
-                <button class="nav-btn" id="btnAnterior" onclick="cartelaAnterior()">‹</button>
-                <div class="cartela-info">
-                    <div class="jogador-nome" id="nomeJogador">Jogador</div>
-                    <div class="cartela-numero"><span id="cartelaAtualNum">1</span>/<span id="cartelaTotalNum">2</span></div>
-                </div>
-                <button class="nav-btn" id="btnProxima" onclick="proximaCartela()">›</button>
-            </div>
-
-            <!-- Container de Cartelas com Swipe -->
-            <div class="cartelas-wrapper" id="cartelasWrapper">
-                <div class="cartelas-container" id="cartelasContainer">
-                    <!-- Cartelas serão inseridas aqui dinamicamente -->
-                </div>
-            </div>
-
-            <!-- Indicador de Swipe -->
-            <p class="swipe-hint" id="swipeHint">👆 Deslize para ver outras cartelas</p>
-
-            <!-- Dots de Paginação -->
+        <div class="tela" id="telaJogo">
+            <div class="numero-alerta" id="numeroAlerta"><span id="alertaLetra">B</span> <span id="alertaNumero">12</span><div class="timer-bar"><div class="timer-progress" id="timerProgress"></div></div></div>
+            <div class="cartela-nav"><button class="nav-btn" id="btnAnterior" onclick="cartelaAnterior()">‹</button><div class="cartela-info"><div class="jogador-nome" id="nomeJogador">Jogador</div><div class="cartela-numero"><span id="cartelaAtualNum">1</span>/<span id="cartelaTotalNum">2</span></div></div><button class="nav-btn" id="btnProxima" onclick="proximaCartela()">›</button></div>
+            <div class="cartelas-wrapper" id="cartelasWrapper"><div class="cartelas-container" id="cartelasContainer"></div></div>
+            <p class="swipe-hint" id="swipeHint">👆 Deslize para outras cartelas</p>
             <div class="pagination-dots" id="paginationDots"></div>
-
-            <!-- Botão BINGO -->
-            <button class="btn-bingo" id="btnBingo" onclick="gritarBingo()">
-                🔔 BINGO!
-            </button>
+            <button class="btn-bingo" id="btnBingo" onclick="gritarBingo()">🔔 BINGO!</button>
         </div>
     </div>
-
-    <!-- Tela de Aguardando Verificação -->
-    <div class="tela-verificacao" id="telaVerificacao">
-        <div class="verificacao-icon">🔍</div>
-        <h2 class="verificacao-text">Verificando seu Bingo...</h2>
-        <p style="color: rgba(255,255,255,0.6);">Aguarde o operador</p>
-    </div>
-
-    <!-- Tela de Resultado -->
-    <div class="tela-resultado" id="telaResultado">
-        <div class="resultado-icon" id="resultadoIcon">🏆</div>
-        <h1 class="resultado-titulo" id="resultadoTitulo">VOCÊ VENCEU!</h1>
-        <p class="resultado-msg" id="resultadoMsg"></p>
-        <div class="numeros-perdidos" id="numerosPerdidos"></div>
-        <button class="btn-voltar" id="btnVoltar" onclick="voltarJogo()">CONTINUAR</button>
-    </div>
-
-    <!-- Toast -->
+    <div class="tela-verificacao" id="telaVerificacao"><div class="verificacao-icon">🔍</div><h2 class="verificacao-text">Verificando...</h2><p style="color:rgba(255,255,255,.6)">Aguarde o operador</p></div>
+    <div class="tela-resultado" id="telaResultado"><div class="resultado-icon" id="resultadoIcon">🏆</div><h1 class="resultado-titulo" id="resultadoTitulo">VOCÊ VENCEU!</h1><p class="resultado-msg" id="resultadoMsg"></p><div class="numeros-perdidos" id="numerosPerdidos"></div><button class="btn-voltar" id="btnVoltar" onclick="voltarJogo()">CONTINUAR</button></div>
     <div class="toast" id="toast"></div>
-
-    <!-- Loading -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- Firebase -->
+    <div class="loading" id="loading"><div class="spinner"></div></div>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
     <script>
-        // Configuração Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPYcph6zvKD-pIrDSwlL378hJKQoz-r2I",
-            authDomain: "bingo-16f47.firebaseapp.com",
-            databaseURL: "https://bingo-16f47-default-rtdb.firebaseio.com",
-            projectId: "bingo-16f47",
-            storageBucket: "bingo-16f47.firebasestorage.app",
-            messagingSenderId: "549011622250",
-            appId: "1:549011622250:web:d86e8112d2d108f239fd13"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Estado
-        let salaId = null;
-        let sala = null;
-        let jogadorId = null;
-        let jogador = null;
-        let cartelaAtual = 0;
-        let fotoBase64 = null;
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            // Pegar ID da sala da URL
-            const params = new URLSearchParams(window.location.search);
-            salaId = params.get('sala');
-
-            if (!salaId) {
-                mostrarErro();
-                return;
-            }
-
-            // Verificar se já está cadastrado (localStorage)
-            const savedJogador = localStorage.getItem('bingo_jogador_' + salaId);
-            if (savedJogador) {
-                jogadorId = savedJogador;
-                verificarJogadorExistente();
-            } else {
-                carregarSala();
-            }
-
-            // Setup swipe
-            setupSwipe();
-        });
-
-        // Funções de UI
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('active');
-            setTimeout(() => toast.classList.remove('active'), 3000);
-        }
-
-        function showLoading() {
-            document.getElementById('loading').classList.add('active');
-        }
-
-        function hideLoading() {
-            document.getElementById('loading').classList.remove('active');
-        }
-
-        function mostrarErro() {
-            document.getElementById('telaCadastro').style.display = 'none';
-            document.getElementById('telaErro').classList.add('active');
-        }
-
-        // Carregar Sala
-        async function carregarSala() {
-            showLoading();
-
-            try {
-                const snapshot = await db.ref('salas/' + salaId).once('value');
-                sala = snapshot.val();
-
-                if (!sala || !sala.ativa) {
-                    mostrarErro();
-                    return;
-                }
-
-                document.getElementById('salaNome').textContent = sala.nome;
-                document.getElementById('qtdCartelas').textContent = sala.cartelasPorJogador;
-                document.getElementById('telaCadastro').style.display = 'block';
-
-            } catch (error) {
-                showToast('Erro ao carregar sala');
-                mostrarErro();
-            }
-
-            hideLoading();
-        }
-
-        // Verificar Jogador Existente
-        async function verificarJogadorExistente() {
-            showLoading();
-
-            try {
-                const jogadorSnap = await db.ref('jogadores/' + jogadorId).once('value');
-                jogador = jogadorSnap.val();
-
-                if (!jogador || jogador.salaId !== salaId) {
-                    // Jogador não existe mais ou mudou de sala
-                    localStorage.removeItem('bingo_jogador_' + salaId);
-                    jogadorId = null;
-                    carregarSala();
-                    return;
-                }
-
-                // Carregar sala
-                const salaSnap = await db.ref('salas/' + salaId).once('value');
-                sala = salaSnap.val();
-
-                if (!sala || !sala.ativa) {
-                    mostrarErro();
-                    return;
-                }
-
-                document.getElementById('salaNome').textContent = sala.nome;
-
-                // Ir direto para o jogo ou aguardo
-                document.getElementById('telaCadastro').style.display = 'none';
-
-                if (sala.jogando) {
-                    iniciarJogo();
-                } else {
-                    mostrarAguardo();
-                }
-
-                // Escutar mudanças
-                escutarMudancas();
-
-            } catch (error) {
-                showToast('Erro ao verificar jogador');
-                localStorage.removeItem('bingo_jogador_' + salaId);
-                carregarSala();
-            }
-
-            hideLoading();
-        }
-
-        // Foto
-        function tirarFoto() {
-            document.getElementById('inputCamera').click();
-        }
-
-        function escolherFoto() {
-            document.getElementById('inputFoto').click();
-        }
-
-        function handleFoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                // Redimensionar imagem
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const size = 200;
-                    canvas.width = size;
-                    canvas.height = size;
-                    const ctx = canvas.getContext('2d');
-
-                    // Crop quadrado do centro
-                    const minDim = Math.min(img.width, img.height);
-                    const sx = (img.width - minDim) / 2;
-                    const sy = (img.height - minDim) / 2;
-
-                    ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
-                    fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                    // Preview
-                    document.getElementById('fotoPreview').innerHTML = `<img src="${fotoBase64}" alt="Foto">`;
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Gerar ID único
-        function gerarId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        // Gerar números únicos
-        function gerarNumerosUnicos(min, max, qtd) {
-            const nums = [];
-            while (nums.length < qtd) {
-                const n = Math.floor(Math.random() * (max - min + 1)) + min;
-                if (!nums.includes(n)) nums.push(n);
-            }
-            return nums;
-        }
-
-        // Gerar Cartela
-        function gerarCartela(index) {
-            const B = gerarNumerosUnicos(1, 15, 5);
-            const I = gerarNumerosUnicos(16, 30, 5);
-            const N = gerarNumerosUnicos(31, 45, 4); // 4 porque centro é livre
-            const G = gerarNumerosUnicos(46, 60, 5);
-            const O = gerarNumerosUnicos(61, 75, 5);
-
-            const numeros = [];
-            for (let linha = 0; linha < 5; linha++) {
-                const linhaCartela = [];
-                linhaCartela.push(B[linha]);
-                linhaCartela.push(I[linha]);
-                
-                if (linha === 2) {
-                    linhaCartela.push(0); // Coringa
-                } else {
-                    linhaCartela.push(N[linha < 2 ? linha : linha - 1]);
-                }
-                
-                linhaCartela.push(G[linha]);
-                linhaCartela.push(O[linha]);
-                numeros.push(linhaCartela);
-            }
-
-            return {
-                id: index + 1,
-                numeros: numeros,
-                marcados: [0], // Coringa já marcado
-                totalMarcados: 1
-            };
-        }
-
-        // Entrar no Bingo
-        async function entrarNoBingo() {
-            const nome = document.getElementById('inputNome').value.trim();
-            const sobrenome = document.getElementById('inputSobrenome').value.trim();
-
-            if (!nome || !sobrenome) {
-                showToast('Preencha nome e sobrenome!');
-                return;
-            }
-
-            showLoading();
-
-            try {
-                // Gerar cartelas
-                const cartelas = [];
-                for (let i = 0; i < sala.cartelasPorJogador; i++) {
-                    cartelas.push(gerarCartela(i));
-                }
-
-                // Criar jogador
-                jogadorId = gerarId();
-                jogador = {
-                    salaId: salaId,
-                    nome: nome,
-                    sobrenome: sobrenome,
-                    foto: fotoBase64 || null,
-                    cartelas: cartelas,
-                    gritouBingo: false,
-                    cartelaVencedora: null,
-                    entradaEm: Date.now()
-                };
-
-                await db.ref('jogadores/' + jogadorId).set(jogador);
-
-                // Salvar no localStorage
-                localStorage.setItem('bingo_jogador_' + salaId, jogadorId);
-
-                // Mostrar tela apropriada
-                document.getElementById('telaCadastro').style.display = 'none';
-
-                if (sala.jogando) {
-                    iniciarJogo();
-                } else {
-                    mostrarAguardo();
-                }
-
-                // Escutar mudanças
-                escutarMudancas();
-
-                showToast('Bem-vindo, ' + nome + '!');
-
-            } catch (error) {
-                showToast('Erro ao entrar: ' + error.message);
-            }
-
-            hideLoading();
-        }
-
-        // Mostrar Aguardo
-        function mostrarAguardo() {
-            document.getElementById('telaAguardo').classList.add('active');
-            document.getElementById('telaJogo').classList.remove('active');
-            document.getElementById('aguardoCartelas').textContent = jogador.cartelas.length;
-
-            // Contar jogadores
-            db.ref('jogadores').orderByChild('salaId').equalTo(salaId).on('value', (snap) => {
-                const jogadores = snap.val() || {};
-                document.getElementById('aguardoJogadores').textContent = Object.keys(jogadores).length;
-            });
-        }
-
-        // Iniciar Jogo
-        function iniciarJogo() {
-            document.getElementById('telaAguardo').classList.remove('active');
-            document.getElementById('telaJogo').classList.add('active');
-
-            document.getElementById('nomeJogador').textContent = jogador.nome + ' ' + jogador.sobrenome;
-            document.getElementById('cartelaTotalNum').textContent = jogador.cartelas.length;
-
-            // Esconder hint se só tem 1 cartela
-            if (jogador.cartelas.length <= 1) {
-                document.getElementById('swipeHint').style.display = 'none';
-            }
-
-            renderizarCartelas();
-            atualizarNavegacao();
-            atualizarBotaoBingo();
-        }
-
-        // Renderizar Cartelas
-        function renderizarCartelas() {
-            const container = document.getElementById('cartelasContainer');
-            container.innerHTML = '';
-
-            jogador.cartelas.forEach((cartela, idx) => {
-                const cartelaDiv = document.createElement('div');
-                cartelaDiv.className = 'cartela';
-                cartelaDiv.id = `cartela-${idx}`;
-
-                let gridHtml = '';
-                for (let row = 0; row < 5; row++) {
-                    for (let col = 0; col < 5; col++) {
-                        const num = cartela.numeros[row][col];
-                        const marcado = cartela.marcados.includes(num);
-                        const isCoringa = num === 0;
-
-                        let classes = 'numero';
-                        if (isCoringa) classes += ' coringa';
-                        else if (marcado) classes += ' marcado';
-
-                        const conteudo = isCoringa ? 'V' : num;
-                        const onclick = isCoringa ? '' : `onclick="marcarNumero(${idx}, ${num})"`;
-
-                        gridHtml += `<div class="${classes}" id="num-${idx}-${num}" ${onclick}>${conteudo}</div>`;
-                    }
-                }
-
-                // Contador de marcados
-                const totalMarcados = cartela.marcados.filter(n => n !== 0).length;
-                let dotsHtml = '';
-                for (let i = 0; i < 24; i++) {
-                    dotsHtml += `<div class="marcado-dot ${i < totalMarcados ? 'ativo' : ''}"></div>`;
-                }
-
-                cartelaDiv.innerHTML = `
-                    <div class="cartela-card">
-                        <div class="bingo-header">
-                            <div class="bingo-letra">B</div>
-                            <div class="bingo-letra">I</div>
-                            <div class="bingo-letra">N</div>
-                            <div class="bingo-letra">G</div>
-                            <div class="bingo-letra">O</div>
-                        </div>
-                        <div class="cartela-grid">
-                            ${gridHtml}
-                        </div>
-                        <div class="marcados-counter" id="counter-${idx}">
-                            ${dotsHtml}
-                            <div class="marcados-text">${totalMarcados}/24 marcados</div>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(cartelaDiv);
-            });
-
-            // Dots de paginação
-            const dotsContainer = document.getElementById('paginationDots');
-            dotsContainer.innerHTML = '';
-            if (jogador.cartelas.length > 1) {
-                jogador.cartelas.forEach((_, idx) => {
-                    const dot = document.createElement('div');
-                    dot.className = `pagination-dot ${idx === 0 ? 'active' : ''}`;
-                    dot.onclick = () => irParaCartela(idx);
-                    dotsContainer.appendChild(dot);
-                });
-            }
-        }
-
-        // Marcar Número
-        async function marcarNumero(cartelaIdx, numero) {
-            const cartela = jogador.cartelas[cartelaIdx];
-            const idx = cartela.marcados.indexOf(numero);
-
-            // Toggle
-            if (idx > -1) {
-                cartela.marcados.splice(idx, 1);
-            } else {
-                cartela.marcados.push(numero);
-            }
-
-            // Atualizar UI
-            const numEl = document.getElementById(`num-${cartelaIdx}-${numero}`);
-            numEl.classList.toggle('marcado');
-
-            // Feedback
-            playSound('ploc');
-            if (navigator.vibrate) navigator.vibrate(50);
-
-            // Atualizar contador
-            atualizarContador(cartelaIdx);
-
-            // Atualizar Firebase
-            try {
-                await db.ref(`jogadores/${jogadorId}/cartelas/${cartelaIdx}/marcados`).set(cartela.marcados);
-            } catch (error) {
-                showToast('Erro ao salvar');
-            }
-
-            // Verificar se pode gritar bingo
-            atualizarBotaoBingo();
-        }
-
-        // Atualizar Contador
-        function atualizarContador(cartelaIdx) {
-            const cartela = jogador.cartelas[cartelaIdx];
-            const totalMarcados = cartela.marcados.filter(n => n !== 0).length;
-            const counter = document.getElementById(`counter-${cartelaIdx}`);
-            
-            const dots = counter.querySelectorAll('.marcado-dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('ativo', i < totalMarcados);
-            });
-
-            counter.querySelector('.marcados-text').textContent = `${totalMarcados}/24 marcados`;
-        }
-
-        // Verificar Sequência
-        function verificarSequencia(numeros, marcados) {
-            // Horizontal
-            for (let i = 0; i < 5; i++) {
-                const linha = numeros[i];
-                if (linha.every(n => n === 0 || marcados.includes(n))) {
-                    return true;
-                }
-            }
-
-            // Vertical
-            for (let col = 0; col < 5; col++) {
-                const coluna = numeros.map(linha => linha[col]);
-                if (coluna.every(n => n === 0 || marcados.includes(n))) {
-                    return true;
-                }
-            }
-
-            // Diagonal \
-            const diag1 = [numeros[0][0], numeros[1][1], numeros[2][2], numeros[3][3], numeros[4][4]];
-            if (diag1.every(n => n === 0 || marcados.includes(n))) {
-                return true;
-            }
-
-            // Diagonal /
-            const diag2 = [numeros[0][4], numeros[1][3], numeros[2][2], numeros[3][1], numeros[4][0]];
-            if (diag2.every(n => n === 0 || marcados.includes(n))) {
-                return true;
-            }
-
-            return false;
-        }
-
-        // Atualizar Botão Bingo
-        function atualizarBotaoBingo() {
-            const btnBingo = document.getElementById('btnBingo');
-            let podeBingo = false;
-
-            // Verificar todas as cartelas
-            for (let i = 0; i < jogador.cartelas.length; i++) {
-                const cartela = jogador.cartelas[i];
-                if (verificarSequencia(cartela.numeros, cartela.marcados)) {
-                    podeBingo = true;
-                    break;
-                }
-            }
-
-            if (podeBingo) {
-                btnBingo.classList.add('ativo');
-            } else {
-                btnBingo.classList.remove('ativo');
-            }
-        }
-
-        // Gritar Bingo
-        async function gritarBingo() {
-            const btnBingo = document.getElementById('btnBingo');
-            if (!btnBingo.classList.contains('ativo')) {
-                showToast('Complete uma linha, coluna ou diagonal!');
-                return;
-            }
-
-            // Encontrar qual cartela tem sequência
-            let cartelaVencedora = -1;
-            for (let i = 0; i < jogador.cartelas.length; i++) {
-                const cartela = jogador.cartelas[i];
-                if (verificarSequencia(cartela.numeros, cartela.marcados)) {
-                    cartelaVencedora = i;
-                    break;
-                }
-            }
-
-            if (cartelaVencedora === -1) {
-                showToast('Nenhuma sequência completa!');
-                return;
-            }
-
-            // Feedback
-            playSound('bingo');
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
-
-            // Atualizar Firebase
-            try {
-                await db.ref(`salas/${salaId}/alertasBingo`).push({
-                    jogadorId: jogadorId,
-                    jogadorNome: `${jogador.nome} ${jogador.sobrenome}`,
-                    cartelaIndex: cartelaVencedora,
-                    timestamp: Date.now()
-                });
-
-                await db.ref(`jogadores/${jogadorId}`).update({
-                    gritouBingo: true,
-                    cartelaVencedora: cartelaVencedora
-                });
-
-                // Mostrar tela de verificação
-                document.getElementById('telaVerificacao').classList.add('active');
-
-            } catch (error) {
-                showToast('Erro ao gritar bingo');
-            }
-        }
-
-        // Escutar Mudanças
-        function escutarMudancas() {
-            // Mudanças na sala
-            db.ref('salas/' + salaId).on('value', (snapshot) => {
-                const novosDados = snapshot.val();
-                if (!novosDados) return;
-
-                sala = novosDados;
-
-                // Jogo começou?
-                if (sala.jogando && !document.getElementById('telaJogo').classList.contains('active')) {
-                    iniciarJogo();
-                }
-
-                // Número sorteado?
-                if (sala.numeroAtual) {
-                    mostrarNumeroAlerta(sala.numeroAtual, sala.tempoRestante);
-                    destacarNumero(sala.numeroAtual);
-                } else {
-                    esconderNumeroAlerta();
-                }
-
-                // Vencedor?
-                if (sala.vencedor) {
-                    // Verificar se eu ganhei
-                    if (jogador.gritouBingo) {
-                        mostrarResultado(true, sala.vencedor.nome === `${jogador.nome} ${jogador.sobrenome}`);
-                    } else {
-                        mostrarResultado(false, false, sala.vencedor.nome);
-                    }
-                }
-            });
-
-            // Mudanças no jogador (para quando operador rejeita bingo)
-            db.ref('jogadores/' + jogadorId).on('value', (snapshot) => {
-                const novosData = snapshot.val();
-                if (!novosData) return;
-
-                const antigoBingo = jogador?.gritouBingo;
-                jogador = novosData;
-
-                // Se gritouBingo voltou a false e tela de verificação estava ativa
-                if (antigoBingo && !jogador.gritouBingo) {
-                    document.getElementById('telaVerificacao').classList.remove('active');
-                    showToast('Bingo não validado. Continue jogando!');
-                }
-            });
-        }
-
-        // Mostrar Número Alerta
-        function mostrarNumeroAlerta(numero, tempo) {
-            const alerta = document.getElementById('numeroAlerta');
-            const letra = getLetra(numero);
-            
-            document.getElementById('alertaLetra').textContent = letra;
-            document.getElementById('alertaNumero').textContent = numero;
-            
-            // Timer progress
-            const progress = document.getElementById('timerProgress');
-            progress.style.width = (tempo / 5 * 100) + '%';
-            
-            alerta.classList.add('active');
-        }
-
-        function esconderNumeroAlerta() {
-            document.getElementById('numeroAlerta').classList.remove('active');
-        }
-
-        function getLetra(num) {
-            if (num >= 1 && num <= 15) return 'B';
-            if (num >= 16 && num <= 30) return 'I';
-            if (num >= 31 && num <= 45) return 'N';
-            if (num >= 46 && num <= 60) return 'G';
-            return 'O';
-        }
-
-        // Destacar Número nas Cartelas
-        function destacarNumero(numero) {
-            jogador.cartelas.forEach((_, idx) => {
-                const el = document.getElementById(`num-${idx}-${numero}`);
-                if (el && !el.classList.contains('marcado')) {
-                    el.classList.add('destaque');
-                    setTimeout(() => el.classList.remove('destaque'), 1000);
-                }
-            });
-        }
-
-        // Mostrar Resultado
-        function mostrarResultado(participou, venceu, nomeVencedor = '') {
-            document.getElementById('telaVerificacao').classList.remove('active');
-            document.getElementById('telaResultado').classList.add('active');
-
-            if (venceu) {
-                document.getElementById('resultadoIcon').textContent = '🏆';
-                document.getElementById('resultadoTitulo').textContent = 'VOCÊ VENCEU!';
-                document.getElementById('resultadoTitulo').className = 'resultado-titulo venceu';
-                document.getElementById('resultadoMsg').textContent = 'Parabéns! Sua cartela foi validada!';
-                document.getElementById('numerosPerdidos').innerHTML = '';
-                criarConfetes();
-                playSound('vitoria');
-            } else if (participou) {
-                document.getElementById('resultadoIcon').textContent = '❌';
-                document.getElementById('resultadoTitulo').textContent = 'BINGO INVÁLIDO';
-                document.getElementById('resultadoTitulo').className = 'resultado-titulo perdeu';
-                document.getElementById('resultadoMsg').textContent = 'Ops! Seu bingo não foi validado.';
-                document.getElementById('numerosPerdidos').innerHTML = '';
-            } else {
-                document.getElementById('resultadoIcon').textContent = '🎉';
-                document.getElementById('resultadoTitulo').textContent = 'FIM DE JOGO';
-                document.getElementById('resultadoTitulo').className = 'resultado-titulo';
-                document.getElementById('resultadoMsg').textContent = `${nomeVencedor} venceu!`;
-                document.getElementById('numerosPerdidos').innerHTML = '';
-            }
-        }
-
-        // Voltar ao Jogo
-        function voltarJogo() {
-            document.querySelectorAll('.confetti').forEach(c => c.remove());
-            document.getElementById('telaResultado').classList.remove('active');
-            
-            // Resetar estado
-            jogador.gritouBingo = false;
-            jogador.cartelaVencedora = null;
-
-            // Verificar se há novo jogo
-            if (!sala.jogando) {
-                mostrarAguardo();
-            }
-        }
-
-        // Navegação de Cartelas
-        function atualizarNavegacao() {
-            const total = jogador.cartelas.length;
-            
-            document.getElementById('cartelaAtualNum').textContent = cartelaAtual + 1;
-            document.getElementById('btnAnterior').disabled = cartelaAtual === 0;
-            document.getElementById('btnProxima').disabled = cartelaAtual === total - 1;
-
-            // Atualizar dots
-            document.querySelectorAll('.pagination-dot').forEach((dot, idx) => {
-                dot.classList.toggle('active', idx === cartelaAtual);
-            });
-
-            // Mover container
-            const container = document.getElementById('cartelasContainer');
-            container.style.transform = `translateX(-${cartelaAtual * 100}%)`;
-        }
-
-        function cartelaAnterior() {
-            if (cartelaAtual > 0) {
-                cartelaAtual--;
-                atualizarNavegacao();
-            }
-        }
-
-        function proximaCartela() {
-            if (cartelaAtual < jogador.cartelas.length - 1) {
-                cartelaAtual++;
-                atualizarNavegacao();
-            }
-        }
-
-        function irParaCartela(idx) {
-            cartelaAtual = idx;
-            atualizarNavegacao();
-        }
-
-        // Setup Swipe
-        function setupSwipe() {
-            const wrapper = document.getElementById('cartelasWrapper');
-
-            wrapper.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-
-            wrapper.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, { passive: true });
-        }
-
-        function handleSwipe() {
-            const diff = touchStartX - touchEndX;
-            const threshold = 50;
-
-            if (Math.abs(diff) > threshold) {
-                if (diff > 0) {
-                    proximaCartela();
-                } else {
-                    cartelaAnterior();
-                }
-            }
-        }
-
-        // Confetes
-        function criarConfetes() {
-            const cores = ['#e63946', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#ffd700'];
-
-            for (let i = 0; i < 50; i++) {
-                const confete = document.createElement('div');
-                confete.className = 'confetti';
-                confete.style.left = Math.random() * 100 + '%';
-                confete.style.background = cores[Math.floor(Math.random() * cores.length)];
-                confete.style.animationDelay = Math.random() * 3 + 's';
-                confete.style.animationDuration = (2 + Math.random() * 2) + 's';
-                document.body.appendChild(confete);
-            }
-        }
-
-        // Sons
-        function playSound(tipo) {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                if (tipo === 'ploc') {
-                    osc.frequency.setValueAtTime(800, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.1);
-                } else if (tipo === 'bingo') {
-                    [600, 800, 1000].forEach((freq, i) => {
-                        setTimeout(() => {
-                            const osc2 = ctx.createOscillator();
-                            const gain2 = ctx.createGain();
-                            osc2.connect(gain2);
-                            gain2.connect(ctx.destination);
-                            osc2.frequency.value = freq;
-                            gain2.gain.setValueAtTime(0.3, ctx.currentTime);
-                            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                            osc2.start(ctx.currentTime);
-                            osc2.stop(ctx.currentTime + 0.2);
-                        }, i * 100);
-                    });
-                } else if (tipo === 'vitoria') {
-                    [523, 659, 784, 1047].forEach((nota, i) => {
-                        setTimeout(() => {
-                            const osc2 = ctx.createOscillator();
-                            const gain2 = ctx.createGain();
-                            osc2.connect(gain2);
-                            gain2.connect(ctx.destination);
-                            osc2.frequency.value = nota;
-                            gain2.gain.setValueAtTime(0.3, ctx.currentTime);
-                            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                            osc2.start(ctx.currentTime);
-                            osc2.stop(ctx.currentTime + 0.3);
-                        }, i * 150);
-                    });
-                }
-            } catch (e) {
-                // Ignorar erros de áudio
-            }
-        }
+        const firebaseConfig={apiKey:"AIzaSyCPYcph6zvKD-pIrDSwlL378hJKQoz-r2I",authDomain:"bingo-16f47.firebaseapp.com",databaseURL:"https://bingo-16f47-default-rtdb.firebaseio.com",projectId:"bingo-16f47",storageBucket:"bingo-16f47.firebasestorage.app",messagingSenderId:"549011622250",appId:"1:549011622250:web:d86e8112d2d108f239fd13"};
+        firebase.initializeApp(firebaseConfig);const db=firebase.database();
+        let salaId=null,sala=null,jogadorId=null,jogador=null,cartelaAtual=0,fotoBase64=null,touchStartX=0,touchEndX=0,vibrando=false;
+        document.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search);salaId=p.get('sala');if(!salaId){mostrarErro();return}const saved=localStorage.getItem('bingo_jogador_'+salaId);if(saved){jogadorId=saved;verificarJogadorExistente()}else carregarSala();setupSwipe()});
+        const showToast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('active');setTimeout(()=>t.classList.remove('active'),3000)};
+        const showLoading=()=>document.getElementById('loading').classList.add('active');
+        const hideLoading=()=>document.getElementById('loading').classList.remove('active');
+        const mostrarErro=()=>{document.getElementById('telaCadastro').classList.remove('active');document.getElementById('telaErro').classList.add('active')};
+        async function carregarSala(){showLoading();try{const snap=await db.ref('salas/'+salaId).once('value');sala=snap.val();if(!sala||!sala.ativa){mostrarErro();return}document.getElementById('salaNome').textContent=sala.nome;document.getElementById('qtdCartelas').textContent=sala.cartelasPorJogador;document.getElementById('telaCadastro').classList.add('active')}catch(e){showToast('Erro');mostrarErro()}hideLoading()}
+        async function verificarJogadorExistente(){showLoading();try{const jSnap=await db.ref('jogadores/'+jogadorId).once('value');jogador=jSnap.val();if(!jogador||jogador.salaId!==salaId){localStorage.removeItem('bingo_jogador_'+salaId);jogadorId=null;carregarSala();return}const sSnap=await db.ref('salas/'+salaId).once('value');sala=sSnap.val();if(!sala||!sala.ativa){mostrarErro();return}document.getElementById('salaNome').textContent=sala.nome;document.getElementById('telaCadastro').classList.remove('active');sala.jogando?iniciarJogo():mostrarAguardo();escutarMudancas()}catch(e){showToast('Erro');localStorage.removeItem('bingo_jogador_'+salaId);carregarSala()}hideLoading()}
+        function handleFoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=200;const ctx=c.getContext('2d'),min=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-min)/2,(img.height-min)/2,min,min,0,0,200,200);fotoBase64=c.toDataURL('image/jpeg',.7);document.getElementById('fotoPreview').innerHTML=`<img src="${fotoBase64}">`};img.src=ev.target.result};r.readAsDataURL(f)}
+        const gerarId=()=>Date.now().toString(36)+Math.random().toString(36).substr(2);
+        const gerarNumerosUnicos=(min,max,qtd)=>{const n=[];while(n.length<qtd){const x=Math.floor(Math.random()*(max-min+1))+min;if(!n.includes(x))n.push(x)}return n};
+        function gerarCartela(idx){const B=gerarNumerosUnicos(1,15,5),I=gerarNumerosUnicos(16,30,5),N=gerarNumerosUnicos(31,45,4),G=gerarNumerosUnicos(46,60,5),O=gerarNumerosUnicos(61,75,5),nums=[];for(let l=0;l<5;l++)nums.push([B[l],I[l],l===2?0:N[l<2?l:l-1],G[l],O[l]]);return{id:idx+1,numeros:nums,marcados:[0],totalMarcados:1}}
+        async function entrarNoBingo(){const nome=document.getElementById('inputNome').value.trim(),sobrenome=document.getElementById('inputSobrenome').value.trim();if(!nome||!sobrenome){showToast('Preencha nome e sobrenome!');return}showLoading();try{const carts=[];for(let i=0;i<sala.cartelasPorJogador;i++)carts.push(gerarCartela(i));jogadorId=gerarId();jogador={salaId,nome,sobrenome,foto:fotoBase64,cartelas:carts,gritouBingo:false,cartelaVencedora:null,entradaEm:Date.now()};await db.ref('jogadores/'+jogadorId).set(jogador);localStorage.setItem('bingo_jogador_'+salaId,jogadorId);document.getElementById('telaCadastro').classList.remove('active');sala.jogando?iniciarJogo():mostrarAguardo();escutarMudancas();showToast('Bem-vindo, '+nome+'!')}catch(e){showToast('Erro: '+e.message)}hideLoading()}
+        function mostrarAguardo(){document.getElementById('telaAguardo').classList.add('active');document.getElementById('telaJogo').classList.remove('active');document.getElementById('aguardoCartelas').textContent=jogador.cartelas.length;db.ref('jogadores').orderByChild('salaId').equalTo(salaId).on('value',snap=>{document.getElementById('aguardoJogadores').textContent=Object.keys(snap.val()||{}).length})}
+        function iniciarJogo(){document.getElementById('telaAguardo').classList.remove('active');document.getElementById('telaJogo').classList.add('active');document.getElementById('nomeJogador').textContent=jogador.nome+' '+jogador.sobrenome;document.getElementById('cartelaTotalNum').textContent=jogador.cartelas.length;if(jogador.cartelas.length<=1)document.getElementById('swipeHint').style.display='none';renderizarCartelas();atualizarNavegacao();atualizarBotaoBingo()}
+        function renderizarCartelas(){const cont=document.getElementById('cartelasContainer');cont.innerHTML='';jogador.cartelas.forEach((cart,idx)=>{const div=document.createElement('div');div.className='cartela';div.id='cartela-'+idx;let grid='';for(let r=0;r<5;r++)for(let c=0;c<5;c++){const n=cart.numeros[r][c],marc=cart.marcados.includes(n),cor=n===0;let cls='numero';if(cor)cls+=' coringa';else if(marc)cls+=' marcado';grid+=`<div class="${cls}" id="num-${idx}-${n}" ${cor?'':`onclick="marcarNumero(${idx},${n})"`}>${cor?'V':n}</div>`}const tot=cart.marcados.filter(n=>n!==0).length;let dots='';for(let i=0;i<24;i++)dots+=`<div class="marcado-dot ${i<tot?'ativo':''}"></div>`;div.innerHTML=`<div class="cartela-card"><div class="bingo-header"><div class="bingo-letra">B</div><div class="bingo-letra">I</div><div class="bingo-letra">N</div><div class="bingo-letra">G</div><div class="bingo-letra">O</div></div><div class="cartela-grid">${grid}</div><div class="marcados-counter" id="counter-${idx}">${dots}<div class="marcados-text">${tot}/24 marcados</div></div></div>`;cont.appendChild(div)});const dots=document.getElementById('paginationDots');dots.innerHTML='';if(jogador.cartelas.length>1)jogador.cartelas.forEach((_,idx)=>{const d=document.createElement('div');d.className='pagination-dot '+(idx===0?'active':'');d.onclick=()=>irParaCartela(idx);dots.appendChild(d)})}
+        async function marcarNumero(cartIdx,num){const cart=jogador.cartelas[cartIdx],idx=cart.marcados.indexOf(num);if(idx>-1)cart.marcados.splice(idx,1);else cart.marcados.push(num);const el=document.getElementById('num-'+cartIdx+'-'+num);el.classList.toggle('marcado');playSound('ploc');if(navigator.vibrate)navigator.vibrate(50);atualizarContador(cartIdx);try{await db.ref('jogadores/'+jogadorId+'/cartelas/'+cartIdx+'/marcados').set(cart.marcados);if(cart.marcados.includes(num))await db.ref('salas/'+salaId+'/reacoes').push({nome:jogador.nome,foto:jogador.foto,numero:num,timestamp:Date.now()})}catch(e){showToast('Erro ao salvar')}atualizarBotaoBingo()}
+        function atualizarContador(cartIdx){const cart=jogador.cartelas[cartIdx],tot=cart.marcados.filter(n=>n!==0).length,counter=document.getElementById('counter-'+cartIdx);counter.querySelectorAll('.marcado-dot').forEach((d,i)=>d.classList.toggle('ativo',i<tot));counter.querySelector('.marcados-text').textContent=tot+'/24 marcados'}
+        function verificarSequencia(nums,marc){for(let i=0;i<5;i++)if(nums[i].every(n=>n===0||marc.includes(n)))return true;for(let c=0;c<5;c++)if(nums.map(l=>l[c]).every(n=>n===0||marc.includes(n)))return true;if([nums[0][0],nums[1][1],nums[2][2],nums[3][3],nums[4][4]].every(n=>n===0||marc.includes(n)))return true;if([nums[0][4],nums[1][3],nums[2][2],nums[3][1],nums[4][0]].every(n=>n===0||marc.includes(n)))return true;return false}
+        function atualizarBotaoBingo(){const btn=document.getElementById('btnBingo');let pode=false;for(let i=0;i<jogador.cartelas.length;i++){if(verificarSequencia(jogador.cartelas[i].numeros,jogador.cartelas[i].marcados)){pode=true;break}}btn.classList.toggle('ativo',pode)}
+        async function gritarBingo(){const btn=document.getElementById('btnBingo');if(!btn.classList.contains('ativo')){showToast('Complete uma sequência!');return}let cartVenc=-1;for(let i=0;i<jogador.cartelas.length;i++){if(verificarSequencia(jogador.cartelas[i].numeros,jogador.cartelas[i].marcados)){cartVenc=i;break}}if(cartVenc===-1){showToast('Nenhuma sequência!');return}playSound('bingo');if(navigator.vibrate)navigator.vibrate([100,50,100,50,100]);try{await db.ref('salas/'+salaId+'/alertasBingo').push({jogadorId,jogadorNome:jogador.nome+' '+jogador.sobrenome,foto:jogador.foto,cartelaIndex:cartVenc,timestamp:Date.now()});await db.ref('jogadores/'+jogadorId).update({gritouBingo:true,cartelaVencedora:cartVenc});document.getElementById('telaVerificacao').classList.add('active')}catch(e){showToast('Erro')}}
+        function escutarMudancas(){db.ref('salas/'+salaId).on('value',snap=>{const s=snap.val();if(!s)return;sala=s;if(s.jogando&&!document.getElementById('telaJogo').classList.contains('active'))iniciarJogo();if(s.girando){if(!vibrando&&navigator.vibrate){vibrando=true;vibraContinuo()}}else{vibrando=false}if(s.numeroAtual){mostrarNumeroAlerta(s.numeroAtual,s.tempoRestante||5);destacarNumero(s.numeroAtual)}else esconderNumeroAlerta();if(s.vencedor){if(jogador.gritouBingo)mostrarResultado(true,s.vencedor.nome===jogador.nome+' '+jogador.sobrenome);else mostrarResultado(false,false,s.vencedor.nome)}});db.ref('jogadores/'+jogadorId).on('value',snap=>{const d=snap.val();if(!d)return;const antigo=jogador?.gritouBingo;jogador=d;if(antigo&&!jogador.gritouBingo){document.getElementById('telaVerificacao').classList.remove('active');showToast('Bingo não validado!')}});db.ref('salas/'+salaId+'/reacoes').on('child_added',snap=>{const r=snap.val();if(r.nome!==jogador.nome)mostrarBalaoReacao(r)})}
+        function vibraContinuo(){if(!vibrando)return;if(navigator.vibrate)navigator.vibrate(200);setTimeout(vibraContinuo,300)}
+        function mostrarNumeroAlerta(num,tempo){const al=document.getElementById('numeroAlerta'),let_=getLetra(num);document.getElementById('alertaLetra').textContent=let_;document.getElementById('alertaNumero').textContent=num;document.getElementById('timerProgress').style.width=(tempo/5*100)+'%';al.classList.add('active')}
+        function esconderNumeroAlerta(){document.getElementById('numeroAlerta').classList.remove('active')}
+        const getLetra=n=>n<=15?'B':n<=30?'I':n<=45?'N':n<=60?'G':'O';
+        function destacarNumero(num){jogador.cartelas.forEach((_,idx)=>{const el=document.getElementById('num-'+idx+'-'+num);if(el&&!el.classList.contains('marcado')){el.classList.add('destaque');setTimeout(()=>el.classList.remove('destaque'),1000)}})}
+        function mostrarBalaoReacao(r){const balao=document.createElement('div');balao.className='balao-reacao';balao.style.left=(10+Math.random()*70)+'%';balao.innerHTML=`<img class="balao-foto" src="${r.foto||'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234ecdc4%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2240%22>👤</text></svg>'}"><span class="balao-nome">${r.nome} ✅</span>`;document.body.appendChild(balao);setTimeout(()=>balao.remove(),2500)}
+        function mostrarResultado(participou,venceu,nomeVenc=''){document.getElementById('telaVerificacao').classList.remove('active');document.getElementById('telaResultado').classList.add('active');if(venceu){document.getElementById('resultadoIcon').textContent='🏆';document.getElementById('resultadoTitulo').textContent='VOCÊ VENCEU!';document.getElementById('resultadoTitulo').className='resultado-titulo venceu';document.getElementById('resultadoMsg').textContent='Parabéns!';document.getElementById('numerosPerdidos').innerHTML='';criarConfetes();playSound('vitoria')}else if(participou){document.getElementById('resultadoIcon').textContent='❌';document.getElementById('resultadoTitulo').textContent='BINGO INVÁLIDO';document.getElementById('resultadoTitulo').className='resultado-titulo perdeu';document.getElementById('resultadoMsg').textContent='Seu bingo não foi validado';document.getElementById('numerosPerdidos').innerHTML=''}else{document.getElementById('resultadoIcon').textContent='🎉';document.getElementById('resultadoTitulo').textContent='FIM DE JOGO';document.getElementById('resultadoTitulo').className='resultado-titulo';document.getElementById('resultadoMsg').textContent=nomeVenc+' venceu!';document.getElementById('numerosPerdidos').innerHTML=''}}
+        function voltarJogo(){document.querySelectorAll('.confetti').forEach(c=>c.remove());document.getElementById('telaResultado').classList.remove('active');jogador.gritouBingo=false;jogador.cartelaVencedora=null;if(!sala.jogando)mostrarAguardo()}
+        function atualizarNavegacao(){const tot=jogador.cartelas.length;document.getElementById('cartelaAtualNum').textContent=cartelaAtual+1;document.getElementById('btnAnterior').disabled=cartelaAtual===0;document.getElementById('btnProxima').disabled=cartelaAtual===tot-1;document.querySelectorAll('.pagination-dot').forEach((d,idx)=>d.classList.toggle('active',idx===cartelaAtual));document.getElementById('cartelasContainer').style.transform='translateX(-'+cartelaAtual*100+'%)'}
+        const cartelaAnterior=()=>{if(cartelaAtual>0){cartelaAtual--;atualizarNavegacao()}};
+        const proximaCartela=()=>{if(cartelaAtual<jogador.cartelas.length-1){cartelaAtual++;atualizarNavegacao()}};
+        const irParaCartela=idx=>{cartelaAtual=idx;atualizarNavegacao()};
+        function setupSwipe(){const w=document.getElementById('cartelasWrapper');w.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX},{passive:true});w.addEventListener('touchend',e=>{touchEndX=e.changedTouches[0].screenX;const diff=touchStartX-touchEndX;if(Math.abs(diff)>50){diff>0?proximaCartela():cartelaAnterior()}},{passive:true})}
+        function criarConfetes(){const cores=['#ef4444','#f59e0b','#22c55e','#3b82f6','#a855f7','#ffd700','#ec4899','#4ecdc4'];for(let i=0;i<80;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.background=cores[Math.floor(Math.random()*cores.length)];c.style.animationDelay=Math.random()*3+'s';c.style.animationDuration=(2+Math.random()*2)+'s';document.body.appendChild(c)}}
+        function playSound(tipo){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();if(tipo==='ploc'){const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.setValueAtTime(800,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(400,ctx.currentTime+.1);gain.gain.setValueAtTime(.2,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.01,ctx.currentTime+.1);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.1)}else if(tipo==='bingo'){[600,800,1000,1200].forEach((f,i)=>{setTimeout(()=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=f;gain.gain.setValueAtTime(.4,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.01,ctx.currentTime+.3);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.3)},i*100)})}else if(tipo==='vitoria'){[523,659,784,880,1047].forEach((n,i)=>{setTimeout(()=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=n;gain.gain.setValueAtTime(.4,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.01,ctx.currentTime+.4);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.4)},i*150)})}}catch(e){}}
     </script>
 </body>
 </html>
