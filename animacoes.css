@@ -1,0 +1,513 @@
+/* ================================================
+   BINGO DOS VELOSO - ANIMAÇÕES PROFISSIONAIS
+   Arquivo dedicado às animações do sorteio
+   ================================================ */
+
+/* ====================== */
+/* OVERLAY DE ANIMAÇÃO */
+/* ====================== */
+.animacao-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, 
+        rgba(15, 23, 42, 0.97) 0%, 
+        rgba(0, 0, 0, 0.99) 100%);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.animacao-overlay.active { 
+    display: flex; 
+}
+
+/* Fundo com partículas flutuantes */
+.animacao-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,215,0,0.2), transparent),
+        radial-gradient(3px 3px at 50px 160px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 90px 40px, rgba(255,107,107,0.2), transparent),
+        radial-gradient(3px 3px at 130px 80px, rgba(78,205,196,0.2), transparent);
+    background-size: 200px 200px;
+    animation: floatParticles 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes floatParticles {
+    from { transform: translateY(0); }
+    to { transform: translateY(-200px); }
+}
+
+/* ====================== */
+/* FASE 1: LETRA GIGANTE */
+/* ====================== */
+.fase-letra {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.fase-letra.active { 
+    display: flex;
+    animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeInScale {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.3) rotate(-20deg); 
+    }
+    50% { 
+        transform: scale(1.1) rotate(5deg); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1) rotate(0); 
+    }
+}
+
+/* A letra em si */
+.letra-gigante {
+    font-family: 'Bangers', cursive;
+    font-size: 28rem;
+    line-height: 0.9;
+    position: relative;
+    animation: 
+        pulseLetra 1.5s ease-in-out infinite,
+        glowLetra 2s ease-in-out infinite;
+    text-shadow: 
+        0 0 30px currentColor,
+        0 0 60px currentColor,
+        0 0 100px currentColor,
+        0 0 150px currentColor,
+        8px 8px 0 rgba(0,0,0,0.5),
+        16px 16px 0 rgba(0,0,0,0.3);
+    filter: drop-shadow(0 0 50px currentColor);
+}
+
+@keyframes pulseLetra {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes glowLetra {
+    0%, 100% { 
+        filter: drop-shadow(0 0 50px currentColor) brightness(1); 
+    }
+    50% { 
+        filter: drop-shadow(0 0 80px currentColor) brightness(1.2); 
+    }
+}
+
+/* Cores por letra */
+.letra-gigante.b { 
+    color: #ef4444; 
+    text-shadow: 
+        0 0 30px #ef4444,
+        0 0 60px #ef4444,
+        0 0 100px #ef4444,
+        8px 8px 0 rgba(0,0,0,0.5);
+}
+.letra-gigante.i { 
+    color: #f59e0b; 
+    text-shadow: 
+        0 0 30px #f59e0b,
+        0 0 60px #f59e0b,
+        0 0 100px #f59e0b,
+        8px 8px 0 rgba(0,0,0,0.5);
+}
+.letra-gigante.n { 
+    color: #22c55e; 
+    text-shadow: 
+        0 0 30px #22c55e,
+        0 0 60px #22c55e,
+        0 0 100px #22c55e,
+        8px 8px 0 rgba(0,0,0,0.5);
+}
+.letra-gigante.g { 
+    color: #3b82f6; 
+    text-shadow: 
+        0 0 30px #3b82f6,
+        0 0 60px #3b82f6,
+        0 0 100px #3b82f6,
+        8px 8px 0 rgba(0,0,0,0.5);
+}
+.letra-gigante.o { 
+    color: #a855f7; 
+    text-shadow: 
+        0 0 30px #a855f7,
+        0 0 60px #a855f7,
+        0 0 100px #a855f7,
+        8px 8px 0 rgba(0,0,0,0.5);
+}
+
+/* Texto de suspense */
+.texto-suspense {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 40px;
+    animation: fadeInOut 1.5s ease-in-out infinite;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.5; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+/* Interrogações animadas */
+.interrogacoes {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.interrogacao {
+    font-size: 4rem;
+    color: rgba(255, 215, 0, 0.8);
+    animation: bounceQuestion 0.6s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.interrogacao:nth-child(2) { animation-delay: 0.2s; }
+.interrogacao:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounceQuestion {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* ====================== */
+/* FASE 2: NÚMERO COM EXPLOSÃO */
+/* ====================== */
+.fase-numero {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.fase-numero.active { 
+    display: flex; 
+}
+
+/* Bola gigante do número */
+.bola-numero-grande {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: 
+        entradaNumero 1s cubic-bezier(0.34, 1.56, 0.64, 1),
+        pulseNumero 1.5s ease-in-out infinite 1s;
+    box-shadow: 
+        inset -40px -40px 80px rgba(0, 0, 0, 0.6),
+        inset 40px 40px 80px rgba(255, 255, 255, 0.2),
+        0 0 0 8px rgba(255, 255, 255, 0.3),
+        0 0 60px 20px var(--glow-color),
+        0 0 120px 40px var(--glow-color),
+        0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes entradaNumero {
+    0% { 
+        transform: scale(0) rotate(180deg); 
+        opacity: 0; 
+    }
+    60% { 
+        transform: scale(1.15) rotate(-10deg); 
+    }
+    80% { 
+        transform: scale(0.95) rotate(5deg); 
+    }
+    100% { 
+        transform: scale(1) rotate(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes pulseNumero {
+    0%, 100% { 
+        transform: scale(1); 
+    }
+    50% { 
+        transform: scale(1.05); 
+    }
+}
+
+/* Cores da bola */
+.bola-numero-grande.b { 
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 50%, #991b1b 100%); 
+    --glow-color: rgba(239, 68, 68, 0.5);
+}
+.bola-numero-grande.i { 
+    background: linear-gradient(135deg, #f59e0b 0%, #b45309 50%, #92400e 100%); 
+    --glow-color: rgba(245, 158, 11, 0.5);
+}
+.bola-numero-grande.n { 
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #166534 100%); 
+    --glow-color: rgba(34, 197, 94, 0.5);
+}
+.bola-numero-grande.g { 
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%); 
+    --glow-color: rgba(59, 130, 246, 0.5);
+}
+.bola-numero-grande.o { 
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #6d28d9 100%); 
+    --glow-color: rgba(168, 85, 247, 0.5);
+}
+
+/* Reflexo na bola */
+.bola-numero-grande::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 35%;
+    height: 25%;
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.6) 0%, 
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%
+    );
+    border-radius: 50%;
+    filter: blur(3px);
+}
+
+/* Letra na bola */
+.bola-numero-grande .letra {
+    font-family: 'Bangers', cursive;
+    font-size: 5rem;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(255, 255, 255, 0.3);
+    line-height: 1;
+    margin-bottom: -10px;
+}
+
+/* Número na bola */
+.bola-numero-grande .numero {
+    font-family: 'Bangers', cursive;
+    font-size: 12rem;
+    color: #fff;
+    text-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 255, 255, 0.4);
+    line-height: 1;
+    animation: numeroReveal 0.5s ease-out;
+}
+
+@keyframes numeroReveal {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.5); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* ====================== */
+/* PARTÍCULAS DE EXPLOSÃO */
+/* ====================== */
+.particulas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.particula {
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes particleExplode {
+    0% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translate(
+            calc(-50% + var(--tx)), 
+            calc(-50% + var(--ty))
+        ) scale(0); 
+        opacity: 0; 
+    }
+}
+
+/* Estrelas girando */
+.estrela {
+    position: absolute;
+    font-size: 2rem;
+    animation: starSpin 2s linear infinite;
+}
+
+@keyframes starSpin {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(360deg) scale(0); }
+}
+
+/* ====================== */
+/* RAIOS DE LUZ */
+/* ====================== */
+.raios-luz {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.raio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 300px;
+    transform-origin: center bottom;
+    animation: raioExpand 1s ease-out forwards;
+}
+
+@keyframes raioExpand {
+    0% { 
+        height: 0; 
+        opacity: 1; 
+    }
+    100% { 
+        height: 400px; 
+        opacity: 0; 
+    }
+}
+
+/* ====================== */
+/* CÍRCULOS DE ONDA */
+/* ====================== */
+.ondas-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.onda {
+    position: absolute;
+    border: 3px solid;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ondaExpand 1.5s ease-out forwards;
+}
+
+@keyframes ondaExpand {
+    0% { 
+        width: 0; 
+        height: 0; 
+        opacity: 1; 
+    }
+    100% { 
+        width: 800px; 
+        height: 800px; 
+        opacity: 0; 
+    }
+}
+
+/* ====================== */
+/* TEXTO "NÚMERO SORTEADO" */
+/* ====================== */
+.texto-numero-sorteado {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: #ffd700;
+    margin-top: 50px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    animation: textPulse 1s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* ====================== */
+/* RESPONSIVO */
+/* ====================== */
+@media (max-width: 768px) {
+    .letra-gigante {
+        font-size: 16rem;
+    }
+    
+    .bola-numero-grande {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .bola-numero-grande .letra {
+        font-size: 3.5rem;
+    }
+    
+    .bola-numero-grande .numero {
+        font-size: 8rem;
+    }
+    
+    .texto-suspense {
+        font-size: 1.5rem;
+    }
+    
+    .interrogacao {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .letra-gigante {
+        font-size: 12rem;
+    }
+    
+    .bola-numero-grande {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .bola-numero-grande .letra {
+        font-size: 2.5rem;
+    }
+    
+    .bola-numero-grande .numero {
+        font-size: 6rem;
+    }
+}

@@ -1,181 +1,144 @@
 # 🎰 Bingo dos Veloso
 
-Sistema de bingo eletrônico multiplayer com cartelas clicáveis no celular.
+Sistema de Bingo Multiplayer com animações profissionais, jogo contínuo e experiência autêntica.
 
-![Bingo](https://img.shields.io/badge/Bingo-Multiplayer-red)
-![Firebase](https://img.shields.io/badge/Firebase-Realtime-orange)
-![Mobile](https://img.shields.io/badge/Mobile-Friendly-green)
-
-## 🎮 Como Funciona
-
-Este é um sistema de **BINGO REAL** onde:
-
-1. **Operador** sorteia números no telão (TV/computador)
-2. **Números aparecem por apenas 5 segundos** na tela
-3. **Jogadores** devem **CLICAR MANUALMENTE** nos números de suas cartelas
-4. **Se não clicar a tempo, perde a bolinha!** 😱
-5. **Ganha** quem completar linha/coluna/diagonal primeiro
-
-### ⚠️ Regras Importantes
-
-- Os números sorteados **NÃO** ficam visíveis permanentemente
-- Cada número aparece por **5 segundos** e depois some
-- Os jogadores precisam estar **atentos** e marcar rapidamente
-- Se você perder um número que estava na sua cartela, seu bingo será **INVÁLIDO**
-
-## 📁 Arquivos
-
-| Arquivo | Descrição |
-|---------|-----------|
-| `index.html` | Painel do Operador (para TV/telão) |
-| `jogador.html` | Cartelas no Celular (touch para marcar) |
-
-## 🚀 Deploy no GitHub Pages
-
-### Passo a Passo:
-
-1. **Criar repositório no GitHub**
-   - Acesse [github.com/new](https://github.com/new)
-   - Nome sugerido: `bingo-dos-veloso`
-   - Deixe público
-   - Clique em "Create repository"
-
-2. **Fazer upload dos arquivos**
-   - Na página do repositório, clique em "uploading an existing file"
-   - Arraste os arquivos: `index.html` e `jogador.html`
-   - Clique em "Commit changes"
-
-3. **Ativar GitHub Pages**
-   - Vá em Settings (⚙️)
-   - No menu lateral, clique em "Pages"
-   - Em "Source", selecione "Deploy from a branch"
-   - Em "Branch", selecione `main` e `/root`
-   - Clique em "Save"
-
-4. **Aguardar deploy** (1-2 minutos)
-   - A URL será: `https://SEU-USUARIO.github.io/bingo-dos-veloso/`
-
-## 📱 Como Usar
-
-### Para o Operador (Telão):
-
-1. Acesse `https://SEU-USUARIO.github.io/bingo-dos-veloso/`
-2. Crie uma nova sala com nome e quantidade de cartelas
-3. Mostre o **QR Code** para os jogadores escanearem
-4. Aguarde todos entrarem
-5. Clique em **"INICIAR JOGO"**
-6. Clique em **"SORTEAR PRÓXIMO"** para sortear números
-7. Quando alguém gritar BINGO, verifique e valide
-
-### Para os Jogadores (Celular):
-
-1. Escaneie o **QR Code** do telão
-2. Digite seu **nome** e **sobrenome**
-3. Tire uma **foto** (opcional)
-4. Clique em **"ENTRAR NO BINGO"**
-5. Aguarde o jogo começar
-6. **FIQUE ATENTO!** Quando um número aparecer:
-   - Verifique se está na sua cartela
-   - **CLIQUE RÁPIDO** para marcar
-   - Você tem apenas **5 segundos!**
-7. Complete uma linha/coluna/diagonal
-8. Clique em **"BINGO!"** para gritar
-
-### Múltiplas Cartelas:
-
-- Se tiver mais de uma cartela, **deslize para os lados** para ver as outras
-- Cada cartela é independente
-- Fique atento a **todas** as suas cartelas!
-
-## 🎨 Recursos
-
-✅ QR Code automático para entrada rápida  
-✅ Múltiplas cartelas por jogador (1-5)  
-✅ Múltiplas salas simultâneas  
-✅ Touch otimizado para celular  
-✅ Swipe entre cartelas  
-✅ Som ao marcar número  
-✅ Vibração ao marcar (celular)  
-✅ Animações estilo Mario Party  
-✅ Verificação rigorosa de bingo  
-✅ Registro de números perdidos  
-✅ Foto do jogador  
-✅ Confetes na vitória  
-✅ Responsivo para TV e celular  
-
-## 🔧 Tecnologias
-
-- **HTML5 / CSS3 / JavaScript** - Interface
-- **Firebase Realtime Database** - Sincronização em tempo real
-- **QRCode.js** - Geração de QR codes
-- **Web Audio API** - Sons
-- **Google Fonts** - Pacifico & Poppins
-
-## ⚙️ Firebase
-
-O sistema usa Firebase Realtime Database para sincronização em tempo real. As credenciais já estão configuradas nos arquivos.
-
-### Estrutura do Banco:
+## 📁 Estrutura de Arquivos
 
 ```
-├── salas/
-│   └── {salaId}/
-│       ├── nome
-│       ├── cartelasPorJogador
-│       ├── ativa
-│       ├── jogando
-│       ├── numeroAtual
-│       ├── tempoRestante
-│       ├── numerosSorteados[]
-│       ├── vencedor
-│       └── alertasBingo/
-│
-└── jogadores/
-    └── {jogadorId}/
-        ├── salaId
-        ├── nome
-        ├── sobrenome
-        ├── foto
-        ├── cartelas[]
-        ├── gritouBingo
-        └── cartelaVencedora
+bingo-dos-veloso/
+├── index.html          # Painel do Operador
+├── jogador.html        # Interface Mobile dos Jogadores
+├── README.md           # Este arquivo
+├── css/
+│   ├── operador.css    # Estilos do painel operador
+│   ├── jogador.css     # Estilos mobile
+│   └── animacoes.css   # Animações profissionais do sorteio
+└── js/
+    ├── operador.js     # Lógica do operador
+    ├── jogador.js      # Lógica mobile
+    └── animacoes.js    # Sistema de animações e sons
 ```
 
-## 🎯 Verificação de Bingo
+## 🚀 Como Usar
 
-Para um bingo ser válido:
+### Deploy no GitHub Pages
 
-1. ✅ Deve ter uma sequência completa (linha, coluna ou diagonal)
-2. ✅ Todos os números da sequência devem estar marcados
-3. ✅ Não pode ter perdido nenhum número sorteado que estava na cartela
+1. Crie um repositório no GitHub
+2. Faça upload de TODOS os arquivos mantendo a estrutura de pastas
+3. Vá em Settings → Pages → Source: "Deploy from a branch"
+4. Selecione a branch `main` e pasta `/ (root)`
+5. Aguarde o deploy (1-2 minutos)
 
-Se o jogador perdeu algum número (não clicou a tempo), o bingo é **INVÁLIDO** e ele deve continuar jogando.
+### URLs
 
-## 🐛 Problemas Comuns
+- **Operador**: `https://seu-usuario.github.io/seu-repo/`
+- **Jogadores**: Escaneiam o QR Code gerado automaticamente
 
-### "QR Code não funciona"
-- Verifique se o deploy do GitHub Pages está ativo
-- Tente copiar a URL manualmente
+## 🎮 Funcionalidades
 
-### "Números não aparecem"
-- Verifique a conexão com a internet
-- Recarregue a página
+### Operador (Telão/Computador)
+- ✅ Criar salas com nome e foto do prêmio
+- ✅ QR Code automático para jogadores
+- ✅ Globo animado com bolas girando
+- ✅ **Animação dramática**: Mostra LETRA primeiro (3.5s), depois NÚMERO (5s)
+- ✅ **Botão "VER ÚLTIMO"**: Mostra o último número sorteado novamente
+- ✅ Alertas de BINGO no topo da tela
+- ✅ Verificação automática de cartelas
+- ✅ Lista de ganhadores durante o jogo
+- ✅ Confetes na vitória
 
-### "Não consigo marcar número"
-- Verifique se o jogo já começou
-- O número deve estar na sua cartela
-- Toque diretamente no número
+### Jogador (Celular)
+- ✅ Cadastro com nome e foto
+- ✅ Múltiplas cartelas com swipe
+- ✅ Marcação manual (números NÃO aparecem automaticamente!)
+- ✅ Vibração quando globo gira
+- ✅ Botão BINGO só ativa com sequência válida
+- ✅ Reações em tempo real
+- ✅ Tela de fim de jogo
 
-### "Bingo foi rejeitado"
-- Você provavelmente perdeu algum número
-- Preste mais atenção nos próximos sorteios!
+### Regras de Vitória
+1. **➖ Linha** - 5 números na horizontal
+2. **| Coluna** - 5 números na vertical
+3. **↗️ Diagonal** - 5 números em diagonal
+4. **✖️ Cruzada** - As duas diagonais (X)
+5. **🏆 Cartela Cheia** - SUPER PRÊMIO (encerra o jogo)
 
-## 📜 Licença
+## 🎬 Sistema de Animação
 
-Projeto criado para diversão da família Veloso. Uso livre para fins não comerciais.
+A animação do sorteio foi projetada para gerar suspense:
+
+1. **Globo Gira**: Operador clica em "GIRAR GLOBO"
+2. **Para**: Operador clica em "PARAR!"
+3. **FASE 1 - LETRA**: Letra gigante aparece por 3.5 segundos
+   - Som de suspense crescente
+   - Interrogações animadas ("Qual será o número...?")
+4. **FASE 2 - NÚMERO**: Bola com número aparece por 5 segundos
+   - Explosão de partículas coloridas
+   - Ondas de expansão
+   - Fanfarra musical
+5. **Esconde**: Volta ao globo para próximo sorteio
+
+### Botão "VER ÚLTIMO"
+Se alguém perdeu o número, o operador pode clicar em "VER ÚLTIMO" para mostrar novamente o último número sorteado com a animação completa.
+
+## ⚙️ Configuração Firebase
+
+O projeto usa Firebase Realtime Database. A configuração já está incluída nos arquivos JS. 
+
+Para usar seu próprio Firebase:
+1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
+2. Ative Realtime Database
+3. Configure as regras:
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+4. Substitua o `firebaseConfig` nos arquivos `js/operador.js` e `js/jogador.js`
+
+## 🎨 Personalização
+
+### Cores
+Edite as variáveis CSS no arquivo `css/operador.css`:
+```css
+:root {
+    --red: #ff6b6b;
+    --cyan: #4ecdc4;
+    --yellow: #ffe66d;
+    --purple: #a855f7;
+    --green: #22c55e;
+    --blue: #3b82f6;
+}
+```
+
+### Tempos de Animação
+Edite as constantes no arquivo `js/operador.js`:
+```javascript
+const TEMPO_MOSTRAR_LETRA = 3500;  // 3.5 segundos
+const TEMPO_MOSTRAR_NUMERO = 5000; // 5 segundos
+```
+
+## 📱 Requisitos
+
+- Navegador moderno (Chrome, Firefox, Safari, Edge)
+- Conexão com internet
+- Para jogadores: dispositivo com câmera (opcional, para foto)
+
+## 🎯 Dicas de Uso
+
+1. **Telão grande**: Projete o painel do operador em uma TV/projetor
+2. **Som alto**: Conecte caixas de som para os efeitos
+3. **Iluminação**: Escureça o ambiente durante as animações
+4. **Foto do prêmio**: Adicione uma foto do prêmio para motivar!
+5. **Cartelas impressas**: Opcionalmente, imprima cartelas físicas também
+
+## 📄 Licença
+
+Projeto livre para uso pessoal e comercial.
 
 ---
-
-🎰 **Boa sorte no BINGO!** 🍀
 
 Desenvolvido com ❤️ para a família Veloso
