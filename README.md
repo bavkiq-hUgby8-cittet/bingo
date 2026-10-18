@@ -1,6 +1,30 @@
 # 🎰 Bingo dos Veloso
 
-Sistema de Bingo Multiplayer com animações profissionais, jogo contínuo e experiência autêntica.
+Bingo da família Veloso para o telão e para o celular. A edição em uso é a de **Natal 2026**. Não havia data fixa de 2025 no código; o exemplo da sala passou a sugerir “Natal dos Veloso 2026”.
+
+Este repositório (`bingo`) é a versão principal: HTML, CSS e JavaScript separados, com o README. O repositório irmão `bingo2` é uma cópia achatada do mesmo jogo (só `index.html` e `jogador.html`, animações embutidas), enviada no mesmo dia 11/12/2025, apontando para o mesmo Firebase. Dá para arquivar o `bingo2`; o que vale manter é este.
+
+## Estado do Firebase
+
+O jogo sincroniza o telão e os celulares pelo Realtime Database `bingo-16f47`. Em outubro de 2026 esse banco responde **desativado** (`423`). A chave no código é a chave pública do SDK — o risco de verdade são as regras abertas de leitura e escrita. Nada de família foi apagado daqui.
+
+Para a noite de Natal, o Ramon reativa o banco em um clique:
+
+1. Abra o [Realtime Database do projeto bingo-16f47](https://console.firebase.google.com/project/bingo-16f47/database/bingo-16f47-default-rtdb/data)
+2. Reative o banco
+3. Nas regras, mantenha leitura/escrita liberadas para a família (o jogo não tem login) e, se puder, o índice:
+
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "jogadores": { ".indexOn": ["salaId"] }
+  }
+}
+```
+
+Enquanto o banco estiver desativado, o telão mostra um aviso e não cria sala. Qualquer pessoa com o link do projeto consegue ler e gravar salas, nomes e fotos. Não coloque foto de documento nem dado sensível.
 
 ## 📁 Estrutura de Arquivos
 
@@ -13,10 +37,12 @@ bingo-dos-veloso/
 │   ├── operador.css    # Estilos do painel operador
 │   ├── jogador.css     # Estilos mobile
 │   └── animacoes.css   # Animações profissionais do sorteio
-└── js/
-    ├── operador.js     # Lógica do operador
-    ├── jogador.js      # Lógica mobile
-    └── animacoes.js    # Sistema de animações e sons
+├── js/
+│   ├── operador.js     # Lógica do operador
+│   ├── jogador.js      # Lógica mobile
+│   ├── animacoes.js    # Sistema de animações e sons
+│   └── comum.js        # Regras da cartela, Firebase e utilidades
+└── vendor/             # Firebase 13 e QR Code, servidos junto com o site
 ```
 
 ## 🚀 Como Usar
@@ -32,7 +58,7 @@ bingo-dos-veloso/
 ### URLs
 
 - **Operador**: `https://seu-usuario.github.io/seu-repo/`
-- **Jogadores**: Escaneiam o QR Code gerado automaticamente
+- **Jogadores**: escaneiam o QR Code, ou usam o botão “Copiar link”
 
 ## 🎮 Funcionalidades
 
@@ -81,23 +107,20 @@ A animação do sorteio foi projetada para gerar suspense:
 ### Botão "VER ÚLTIMO"
 Se alguém perdeu o número, o operador pode clicar em "VER ÚLTIMO" para mostrar novamente o último número sorteado com a animação completa.
 
+## 🧪 Ensaio neste computador
+
+O fluxo de verdade usa o Firebase. Para ensaiar sem o banco da família, com o [emulador](https://firebase.google.com/docs/emulator-suite):
+
+```bash
+npx -y firebase-tools@13 emulators:start --only database --project demo-bingo
+python3 -m http.server 5500
+```
+
+Abra `http://127.0.0.1:5500/?emulador=1`. O QR Code do jogador já leva o mesmo modo de ensaio.
+
 ## ⚙️ Configuração Firebase
 
-O projeto usa Firebase Realtime Database. A configuração já está incluída nos arquivos JS. 
-
-Para usar seu próprio Firebase:
-1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
-2. Ative Realtime Database
-3. Configure as regras:
-```json
-{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
-}
-```
-4. Substitua o `firebaseConfig` nos arquivos `js/operador.js` e `js/jogador.js`
+A configuração fica em `js/comum.js`. Para trocar de projeto, crie outro Realtime Database e substitua o `FIREBASE_CONFIG` desse arquivo. As bibliotecas estão em `vendor/` (Firebase JS 13 compat e QRCode), para o jogo não depender de CDN na hora da festa.
 
 ## 🎨 Personalização
 
@@ -115,7 +138,7 @@ Edite as variáveis CSS no arquivo `css/operador.css`:
 ```
 
 ### Tempos de Animação
-Edite as constantes no arquivo `js/operador.js`:
+Edite as constantes no arquivo `js/comum.js`:
 ```javascript
 const TEMPO_MOSTRAR_LETRA = 3500;  // 3.5 segundos
 const TEMPO_MOSTRAR_NUMERO = 5000; // 5 segundos

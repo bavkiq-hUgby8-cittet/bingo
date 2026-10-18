@@ -3,6 +3,7 @@
 class BingoAnimacoes {
     constructor() {
         this.audioCtx = null;
+        this.token = 0;
         this.cores = {
             B: { cor: '#ef4444' },
             I: { cor: '#f59e0b' },
@@ -13,13 +14,20 @@ class BingoAnimacoes {
     }
 
     initAudio() {
-        if (!this.audioCtx) {
-            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (typeof BingoComum !== 'undefined' && BingoComum.obterAudio) {
+            this.audioCtx = BingoComum.obterAudio();
+            return this.audioCtx;
         }
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return null;
+        if (!this.audioCtx || this.audioCtx.state === 'closed') this.audioCtx = new AudioCtx();
+        if (this.audioCtx.state === 'suspended') this.audioCtx.resume().catch(() => {});
         return this.audioCtx;
     }
 
     mostrarLetra(letra) {
+        if (!letra) return;
+        this.token += 1;
         const overlay = document.getElementById('animacaoOverlay');
         const faseLetra = document.getElementById('faseLetra');
         const faseNumero = document.getElementById('faseNumero');
@@ -54,15 +62,20 @@ class BingoAnimacoes {
     }
 
     mostrarNumero(numero, letra) {
+        if (numero == null || !letra) return;
+        const token = ++this.token;
+        const overlay = document.getElementById('animacaoOverlay');
         const faseLetra = document.getElementById('faseLetra');
         const faseNumero = document.getElementById('faseNumero');
         const bola = document.getElementById('bolaNumeroGrande');
         const letraEl = document.getElementById('bolaLetra');
         const numEl = document.getElementById('bolaNumero');
 
+        if (overlay) overlay.classList.add('active');
         faseLetra.classList.remove('active');
         
         setTimeout(() => {
+            if (token !== this.token) return;
             bola.className = 'bola-numero-grande ' + letra.toLowerCase();
             letraEl.textContent = letra;
             numEl.textContent = numero;
@@ -76,6 +89,7 @@ class BingoAnimacoes {
     }
 
     esconder() {
+        this.token += 1;
         const overlay = document.getElementById('animacaoOverlay');
         const faseLetra = document.getElementById('faseLetra');
         const faseNumero = document.getElementById('faseNumero');
@@ -165,6 +179,7 @@ class BingoAnimacoes {
     tocarSomSuspense() {
         try {
             const ctx = this.initAudio();
+            if (!ctx) return;
             
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -194,6 +209,7 @@ class BingoAnimacoes {
     tocarSomNumero() {
         try {
             const ctx = this.initAudio();
+            if (!ctx) return;
             const notas = [523, 659, 784, 1047, 1319, 1568];
             
             notas.forEach((freq, i) => {
@@ -239,6 +255,7 @@ class BingoAnimacoes {
     tocarSomGanhador() {
         try {
             const ctx = this.initAudio();
+            if (!ctx) return;
             const melodia = [
                 { freq: 523, dur: 0.15 },
                 { freq: 659, dur: 0.15 },
@@ -273,6 +290,7 @@ class BingoAnimacoes {
     tocarSomVitoria() {
         try {
             const ctx = this.initAudio();
+            if (!ctx) return;
             const acordes = [
                 [523, 659, 784],
                 [587, 740, 880],
