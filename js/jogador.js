@@ -1,393 +1,694 @@
-/* BINGO DOS VELOSO - JOGADOR JS */
+/* BINGO DOS VELOSO — cartela no celular */
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCPYcph6zvKD-pIrDSwlL378hJKQoz-r2I",
-    authDomain: "bingo-16f47.firebaseapp.com",
-    databaseURL: "https://bingo-16f47-default-rtdb.firebaseio.com",
-    projectId: "bingo-16f47",
-    storageBucket: "bingo-16f47.firebasestorage.app",
-    messagingSenderId: "549011622250",
-    appId: "1:549011622250:web:d86e8112d2d108f239fd13"
-};
+let db = null;
+let salaId = null;
+let sala = null;
+let jogadorId = null;
+let jogador = null;
+let cartelaAtual = 0;
+let fotoBase64 = null;
+let touchStartX = 0;
+let vibrando = false;
+let ganhadores = [];
+let ouvintesLigados = false;
+let ganhadoresProntos = false;
+let vitoriaAnunciada = false;
+let bancoIndisponivel = false;
+const filasMarcacao = {};
+let ouvinteContagem = null;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-let salaId = null, sala = null, jogadorId = null, jogador = null, cartelaAtual = 0, fotoBase64 = null;
-let touchStartX = 0, touchEndX = 0, vibrando = false, ganhadores = [];
-
-document.addEventListener('DOMContentLoaded', () => {
-    const p = new URLSearchParams(location.search);
-    salaId = p.get('sala');
-    if (!salaId) { mostrarErro(); return; }
-    const saved = localStorage.getItem('bingo_jogador_' + salaId);
-    if (saved) { jogadorId = saved; verificarJogadorExistente(); }
-    else { carregarSala(); }
+document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(location.search);
+    salaId = params.get('sala');
     setupSwipe();
+    const form = document.getElementById('formCadastro');
+    if (form) form.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        entrarNoBingo();
+    });
+
+    if (!salaId) {
+        mostrarErro('Falta o código da sala. Peça o QR Code de quem está no telão.');
+        return;
+    }
+
+    const inicio = BingoComum.iniciarFirebase();
+    if (!inicio.ok) {
+        mostrarAvisoBanco(BingoComum.mensagemBanco(inicio));
+        mostrarErro('Sem conexão com o bingo.');
+        return;
+    }
+    db = inicio.db;
+    observarConexao();
+    const saude = await BingoComum.verificarBanco();
+    if (!saude.ok) {
+        bancoIndisponivel = true;
+        mostrarAvisoBanco(BingoComum.mensagemBanco(saude));
+        mostrarErro('O bingo está sem o banco de dados.');
+        return;
+    }
+
+    const salvo = localStorage.getItem('bingo_jogador_' + salaId);
+    if (salvo) {
+        jogadorId = salvo;
+        verificarJogadorExistente();
+    } else {
+        carregarSala();
+    }
 });
 
-const showToast = (msg) => { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('active'); setTimeout(() => t.classList.remove('active'), 3000); };
-const showLoading = () => document.getElementById('loading').classList.add('active');
-const hideLoading = () => document.getElementById('loading').classList.remove('active');
-const mostrarErro = () => { document.getElementById('telaCadastro').classList.remove('active'); document.getElementById('telaErro').classList.add('active'); };
-const getDefaultAvatar = () => "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234ecdc4' width='100' height='100'/><text x='50' y='60' text-anchor='middle' font-size='40'>👤</text></svg>";
+function mostrarAvisoBanco(texto) {
+    const aviso = document.getElementById('avisoBanco');
+    const alvo = document.getElementById('avisoBancoTexto');
+    if (alvo) alvo.textContent = texto;
+    if (aviso) aviso.hidden = false;
+}
+
+function observarConexao() {
+    const selo = document.getElementById('statusConexao');
+    db.ref('.info/connected').on('value', (snap) => {
+        if (!selo) return;
+        const ligado = snap.val() === true;
+        selo.textContent = ligado ? 'No ar' : 'Reconectando…';
+        selo.classList.toggle('offline', !ligado);
+    });
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('active');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => toast.classList.remove('active'), 3200);
+}
+
+function showLoading() {
+    document.getElementById('loading').classList.add('active');
+}
+function hideLoading() {
+    document.getElementById('loading').classList.remove('active');
+}
+
+function mostrarErro(texto) {
+    document.querySelectorAll('.tela').forEach((tela) => tela.classList.remove('active'));
+    const erro = document.getElementById('telaErro');
+    erro.classList.add('active');
+    const paragrafo = erro.querySelector('p');
+    if (paragrafo && texto) paragrafo.textContent = texto;
+}
 
 async function carregarSala() {
     showLoading();
     try {
         const snap = await db.ref('salas/' + salaId).once('value');
         sala = snap.val();
-        if (!sala || !sala.ativa) { mostrarErro(); return; }
-        document.getElementById('salaNome').textContent = sala.nome;
-        document.getElementById('qtdCartelas').textContent = sala.cartelasPorJogador;
+        if (!sala || !sala.ativa) {
+            mostrarErro('Esta sala não existe ou já foi encerrada.');
+            return;
+        }
+        document.getElementById('salaNome').textContent = sala.nome || 'Bingo';
+        document.getElementById('qtdCartelas').textContent = String(sala.cartelasPorJogador || 1);
+        document.querySelectorAll('.tela').forEach((tela) => tela.classList.remove('active'));
         document.getElementById('telaCadastro').classList.add('active');
-    } catch (e) { showToast('Erro'); mostrarErro(); }
-    hideLoading();
+    } catch (erro) {
+        showToast(erro.message || 'Erro ao abrir a sala');
+        mostrarErro('Não consegui abrir a sala.');
+    } finally {
+        hideLoading();
+    }
 }
 
 async function verificarJogadorExistente() {
     showLoading();
+    let abrirCadastro = false;
     try {
-        const jSnap = await db.ref('jogadores/' + jogadorId).once('value');
-        jogador = jSnap.val();
-        if (!jogador || jogador.salaId !== salaId) { localStorage.removeItem('bingo_jogador_' + salaId); jogadorId = null; carregarSala(); return; }
-        const sSnap = await db.ref('salas/' + salaId).once('value');
-        sala = sSnap.val();
-        if (!sala || !sala.ativa) { mostrarErro(); return; }
-        document.getElementById('salaNome').textContent = sala.nome;
+        const jogadorSnap = await db.ref('jogadores/' + jogadorId).once('value');
+        jogador = jogadorSnap.val();
+        if (!jogador || jogador.salaId !== salaId) {
+            localStorage.removeItem('bingo_jogador_' + salaId);
+            jogadorId = null;
+            jogador = null;
+            abrirCadastro = true;
+            return;
+        }
+        const salaSnap = await db.ref('salas/' + salaId).once('value');
+        sala = salaSnap.val();
+        if (!sala || !sala.ativa) {
+            mostrarErro('Esta sala não existe ou já foi encerrada.');
+            return;
+        }
+        document.getElementById('salaNome').textContent = sala.nome || 'Bingo';
         document.getElementById('telaCadastro').classList.remove('active');
-        sala.jogando ? iniciarJogo() : mostrarAguardo();
+        if (sala.jogando) iniciarJogo();
+        else mostrarAguardo();
         escutarMudancas();
-    } catch (e) { showToast('Erro'); localStorage.removeItem('bingo_jogador_' + salaId); carregarSala(); }
-    hideLoading();
+    } catch (erro) {
+        showToast(erro.message || 'Erro ao entrar de novo');
+        localStorage.removeItem('bingo_jogador_' + salaId);
+        jogadorId = null;
+        abrirCadastro = true;
+    } finally {
+        hideLoading();
+    }
+    if (abrirCadastro) await carregarSala();
 }
 
-function handleFoto(e) {
-    const f = e.target.files[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-            const c = document.createElement('canvas');
-            c.width = c.height = 200;
-            const ctx = c.getContext('2d');
-            const min = Math.min(img.width, img.height);
-            ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, 0, 0, 200, 200);
-            fotoBase64 = c.toDataURL('image/jpeg', 0.7);
-            document.getElementById('fotoPreview').innerHTML = '<img src="' + fotoBase64 + '">';
-        };
-        img.src = ev.target.result;
-    };
-    r.readAsDataURL(f);
-}
-
-const gerarId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
-
-const gerarNumerosUnicos = (min, max, qtd) => {
-    const n = [];
-    while (n.length < qtd) { const x = Math.floor(Math.random() * (max - min + 1)) + min; if (!n.includes(x)) n.push(x); }
-    return n;
-};
-
-function gerarCartela(idx) {
-    const B = gerarNumerosUnicos(1, 15, 5), I = gerarNumerosUnicos(16, 30, 5), N = gerarNumerosUnicos(31, 45, 4), G = gerarNumerosUnicos(46, 60, 5), O = gerarNumerosUnicos(61, 75, 5);
-    const nums = [];
-    for (let l = 0; l < 5; l++) nums.push([B[l], I[l], l === 2 ? 0 : N[l < 2 ? l : l - 1], G[l], O[l]]);
-    return { id: idx + 1, numeros: nums, marcados: [0], totalMarcados: 1 };
+async function handleFoto(evento) {
+    const arquivo = evento.target.files && evento.target.files[0];
+    if (!arquivo) return;
+    try {
+        fotoBase64 = await BingoComum.reduzirImagem(arquivo, 200, 0.7);
+        document.getElementById('fotoPreview').innerHTML = '<img alt="Sua foto" src="' + fotoBase64 + '">';
+    } catch (erro) {
+        fotoBase64 = null;
+        showToast(erro.message || 'Não consegui usar essa foto');
+    }
 }
 
 async function entrarNoBingo() {
+    if (bancoIndisponivel || !db) {
+        showToast('O banco do bingo está desativado.');
+        return;
+    }
     const nome = document.getElementById('inputNome').value.trim();
     const sobrenome = document.getElementById('inputSobrenome').value.trim();
-    if (!nome || !sobrenome) { showToast('Preencha nome e sobrenome!'); return; }
+    if (!nome || !sobrenome) {
+        showToast('Preencha nome e sobrenome');
+        return;
+    }
+    if (!sala || !sala.ativa) {
+        mostrarErro('Esta sala não está mais aberta.');
+        return;
+    }
     showLoading();
     try {
-        const carts = [];
-        for (let i = 0; i < sala.cartelasPorJogador; i++) carts.push(gerarCartela(i));
-        jogadorId = gerarId();
-        jogador = { salaId: salaId, nome: nome, sobrenome: sobrenome, foto: fotoBase64, cartelas: carts, gritouBingo: false, cartelaVencedora: null, entradaEm: Date.now() };
+        const quantidade = Math.min(10, Math.max(1, Number(sala.cartelasPorJogador) || 1));
+        const cartelas = [];
+        for (let i = 0; i < quantidade; i += 1) cartelas.push(BingoComum.gerarCartela(i));
+        jogadorId = BingoComum.gerarId();
+        jogador = {
+            salaId: salaId,
+            nome: nome,
+            sobrenome: sobrenome,
+            foto: fotoBase64,
+            cartelas: cartelas,
+            gritouBingo: false,
+            ultimoBingo: null,
+            cartelaVencedora: null,
+            entradaEm: Date.now()
+        };
         await db.ref('jogadores/' + jogadorId).set(jogador);
         localStorage.setItem('bingo_jogador_' + salaId, jogadorId);
         document.getElementById('telaCadastro').classList.remove('active');
-        sala.jogando ? iniciarJogo() : mostrarAguardo();
+        if (sala.jogando) iniciarJogo();
+        else mostrarAguardo();
         escutarMudancas();
         showToast('Bem-vindo, ' + nome + '!');
-    } catch (e) { showToast('Erro: ' + e.message); }
-    hideLoading();
+    } catch (erro) {
+        showToast(erro.message || 'Não consegui entrar');
+    } finally {
+        hideLoading();
+    }
 }
 
 function mostrarAguardo() {
     document.getElementById('telaAguardo').classList.add('active');
     document.getElementById('telaJogo').classList.remove('active');
-    document.getElementById('aguardoCartelas').textContent = jogador.cartelas.length;
-    db.ref('jogadores').orderByChild('salaId').equalTo(salaId).on('value', (snap) => {
-        document.getElementById('aguardoJogadores').textContent = Object.keys(snap.val() || {}).length;
-    });
+    document.getElementById('aguardoCartelas').textContent = String((jogador.cartelas || []).length);
+    if (ouvinteContagem) ouvinteContagem.consulta.off('value', ouvinteContagem.callback);
+    const consulta = db.ref('jogadores').orderByChild('salaId').equalTo(salaId);
+    const callback = (snap) => {
+        const alvo = document.getElementById('aguardoJogadores');
+        if (alvo) alvo.textContent = String(Object.keys(snap.val() || {}).length);
+    };
+    ouvinteContagem = { consulta: consulta, callback: callback };
+    consulta.on('value', callback);
 }
 
 function iniciarJogo() {
+    if (ouvinteContagem) {
+        ouvinteContagem.consulta.off('value', ouvinteContagem.callback);
+        ouvinteContagem = null;
+    }
     document.getElementById('telaAguardo').classList.remove('active');
+    document.getElementById('telaErro').classList.remove('active');
     document.getElementById('telaJogo').classList.add('active');
-    document.getElementById('nomeJogador').textContent = jogador.nome + ' ' + jogador.sobrenome;
-    document.getElementById('cartelaTotalNum').textContent = jogador.cartelas.length;
-    if (jogador.cartelas.length <= 1) document.getElementById('swipeHint').style.display = 'none';
+    document.getElementById('nomeJogador').textContent = (jogador.nome || '') + ' ' + (jogador.sobrenome || '');
+    document.getElementById('cartelaTotalNum').textContent = String((jogador.cartelas || []).length);
+    document.getElementById('swipeHint').style.display = (jogador.cartelas || []).length <= 1 ? 'none' : '';
     renderizarCartelas();
     atualizarNavegacao();
     atualizarBotaoBingo();
+    renderizarChamados();
 }
 
 function renderizarCartelas() {
     const cont = document.getElementById('cartelasContainer');
     cont.innerHTML = '';
-    jogador.cartelas.forEach((cart, idx) => {
+    (jogador.cartelas || []).forEach((cartela, idx) => {
         const div = document.createElement('div');
         div.className = 'cartela';
         div.id = 'cartela-' + idx;
-        let grid = '';
-        for (let r = 0; r < 5; r++) {
-            for (let c = 0; c < 5; c++) {
-                const n = cart.numeros[r][c];
-                const marc = cart.marcados.includes(n);
-                const cor = n === 0;
-                let cls = 'numero';
-                if (cor) cls += ' coringa';
-                else if (marc) cls += ' marcado';
-                grid += '<div class="' + cls + '" id="num-' + idx + '-' + n + '" ' + (cor ? '' : 'onclick="marcarNumero(' + idx + ',' + n + ')"') + '>' + (cor ? 'V' : n) + '</div>';
+        const grid = document.createElement('div');
+        grid.className = 'cartela-grid';
+        const marcados = new Set(BingoComum.listaNumeros(cartela.marcados));
+        for (let linha = 0; linha < 5; linha += 1) {
+            for (let coluna = 0; coluna < 5; coluna += 1) {
+                const numero = cartela.numeros[linha][coluna];
+                if (numero === 0) {
+                    const coringa = document.createElement('div');
+                    coringa.className = 'numero coringa';
+                    coringa.textContent = 'V';
+                    coringa.setAttribute('aria-label', 'Coringa, centro já marcado');
+                    grid.appendChild(coringa);
+                    continue;
+                }
+                const botao = document.createElement('button');
+                botao.type = 'button';
+                botao.className = 'numero' + (marcados.has(numero) ? ' marcado' : '');
+                botao.id = 'num-' + idx + '-' + numero;
+                botao.textContent = String(numero);
+                botao.setAttribute('aria-pressed', marcados.has(numero) ? 'true' : 'false');
+                botao.setAttribute('aria-label', 'Número ' + numero);
+                botao.addEventListener('click', () => marcarNumero(idx, numero));
+                grid.appendChild(botao);
             }
         }
-        const tot = cart.marcados.filter(n => n !== 0).length;
-        let dots = '';
-        for (let i = 0; i < 24; i++) dots += '<div class="marcado-dot ' + (i < tot ? 'ativo' : '') + '"></div>';
-        div.innerHTML = '<div class="cartela-card"><div class="bingo-header"><div class="bingo-letra">B</div><div class="bingo-letra">I</div><div class="bingo-letra">N</div><div class="bingo-letra">G</div><div class="bingo-letra">O</div></div><div class="cartela-grid">' + grid + '</div><div class="marcados-counter" id="counter-' + idx + '">' + dots + '<div class="marcados-text">' + tot + '/24 marcados</div></div></div>';
+        const total = BingoComum.listaNumeros(cartela.marcados).filter((n) => n !== 0).length;
+        const counter = document.createElement('div');
+        counter.className = 'marcados-counter';
+        counter.id = 'counter-' + idx;
+        for (let i = 0; i < 24; i += 1) {
+            const ponto = document.createElement('div');
+            ponto.className = 'marcado-dot' + (i < total ? ' ativo' : '');
+            counter.appendChild(ponto);
+        }
+        const texto = document.createElement('div');
+        texto.className = 'marcados-text';
+        texto.textContent = total + '/24 marcados';
+        counter.appendChild(texto);
+
+        const card = document.createElement('div');
+        card.className = 'cartela-card';
+        const header = document.createElement('div');
+        header.className = 'bingo-header';
+        ['B', 'I', 'N', 'G', 'O'].forEach((letra) => {
+            const el = document.createElement('div');
+            el.className = 'bingo-letra';
+            el.textContent = letra;
+            header.appendChild(el);
+        });
+        card.append(header, grid, counter);
+        div.appendChild(card);
         cont.appendChild(div);
     });
+
     const dots = document.getElementById('paginationDots');
     dots.innerHTML = '';
-    if (jogador.cartelas.length > 1) {
+    if ((jogador.cartelas || []).length > 1) {
         jogador.cartelas.forEach((_, idx) => {
-            const d = document.createElement('div');
-            d.className = 'pagination-dot ' + (idx === 0 ? 'active' : '');
-            d.onclick = () => irParaCartela(idx);
-            dots.appendChild(d);
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'pagination-dot' + (idx === cartelaAtual ? ' active' : '');
+            dot.setAttribute('aria-label', 'Cartela ' + (idx + 1));
+            dot.addEventListener('click', () => irParaCartela(idx));
+            dots.appendChild(dot);
         });
     }
 }
 
-async function marcarNumero(cartIdx, num) {
-    const cart = jogador.cartelas[cartIdx];
-    const idx = cart.marcados.indexOf(num);
-    if (idx > -1) cart.marcados.splice(idx, 1);
-    else cart.marcados.push(num);
-    const el = document.getElementById('num-' + cartIdx + '-' + num);
-    el.classList.toggle('marcado');
+function enfileirar(cartelaIndex, tarefa) {
+    const anterior = filasMarcacao[cartelaIndex] || Promise.resolve();
+    const atual = anterior.then(tarefa, tarefa);
+    filasMarcacao[cartelaIndex] = atual.catch(() => {});
+    return atual;
+}
+
+async function marcarNumero(cartelaIndex, numero) {
+    const cartela = jogador.cartelas[cartelaIndex];
+    if (!cartela) return;
+    if (!Array.isArray(cartela.marcados)) cartela.marcados = [0];
+    const posicao = cartela.marcados.indexOf(numero);
+    if (posicao > -1) cartela.marcados.splice(posicao, 1);
+    else cartela.marcados.push(numero);
+    const el = document.getElementById('num-' + cartelaIndex + '-' + numero);
+    if (el) {
+        const marcado = cartela.marcados.includes(numero);
+        el.classList.toggle('marcado', marcado);
+        el.setAttribute('aria-pressed', marcado ? 'true' : 'false');
+    }
     playSound('ploc');
-    if (navigator.vibrate) navigator.vibrate(50);
-    atualizarContador(cartIdx);
-    try {
-        await db.ref('jogadores/' + jogadorId + '/cartelas/' + cartIdx + '/marcados').set(cart.marcados);
-        if (cart.marcados.includes(num)) {
-            await db.ref('salas/' + salaId + '/reacoes').push({ nome: jogador.nome, foto: jogador.foto, numero: num, timestamp: Date.now() });
-        }
-    } catch (e) { showToast('Erro ao salvar'); }
+    if (navigator.vibrate) navigator.vibrate(30);
+    atualizarContador(cartelaIndex);
     atualizarBotaoBingo();
+    const marcadoAgora = cartela.marcados.includes(numero);
+    try {
+        await enfileirar(cartelaIndex, async () => {
+            await db.ref('jogadores/' + jogadorId + '/cartelas/' + cartelaIndex + '/marcados').set(jogador.cartelas[cartelaIndex].marcados);
+        });
+        if (marcadoAgora) {
+            await db.ref('salas/' + salaId + '/reacoes').push({
+                nome: jogador.nome,
+                foto: jogador.foto || null,
+                numero: numero,
+                timestamp: Date.now()
+            });
+        }
+    } catch (erro) {
+        showToast('Não salvei a marcação. Tente de novo.');
+    }
 }
 
-function atualizarContador(cartIdx) {
-    const cart = jogador.cartelas[cartIdx];
-    const tot = cart.marcados.filter(n => n !== 0).length;
-    const counter = document.getElementById('counter-' + cartIdx);
-    counter.querySelectorAll('.marcado-dot').forEach((d, i) => { d.classList.toggle('ativo', i < tot); });
-    counter.querySelector('.marcados-text').textContent = tot + '/24 marcados';
-}
-
-function verificarSequencia(nums, marc) {
-    for (let i = 0; i < 5; i++) { if (nums[i].every(n => n === 0 || marc.includes(n))) return true; }
-    for (let c = 0; c < 5; c++) { if (nums.map(l => l[c]).every(n => n === 0 || marc.includes(n))) return true; }
-    if ([nums[0][0], nums[1][1], nums[2][2], nums[3][3], nums[4][4]].every(n => n === 0 || marc.includes(n))) return true;
-    if ([nums[0][4], nums[1][3], nums[2][2], nums[3][1], nums[4][0]].every(n => n === 0 || marc.includes(n))) return true;
-    return false;
+function atualizarContador(cartelaIndex) {
+    const cartela = jogador.cartelas[cartelaIndex];
+    const total = BingoComum.listaNumeros(cartela.marcados).filter((n) => n !== 0).length;
+    const counter = document.getElementById('counter-' + cartelaIndex);
+    if (!counter) return;
+    counter.querySelectorAll('.marcado-dot').forEach((ponto, i) => ponto.classList.toggle('ativo', i < total));
+    const texto = counter.querySelector('.marcados-text');
+    if (texto) texto.textContent = total + '/24 marcados';
 }
 
 function atualizarBotaoBingo() {
-    const btn = document.getElementById('btnBingo');
+    const botao = document.getElementById('btnBingo');
     let pode = false;
-    for (let i = 0; i < jogador.cartelas.length; i++) {
-        if (verificarSequencia(jogador.cartelas[i].numeros, jogador.cartelas[i].marcados)) { pode = true; break; }
-    }
-    btn.classList.toggle('ativo', pode);
+    (jogador.cartelas || []).forEach((cartela) => {
+        if (BingoComum.verificarSequencias(cartela.numeros, cartela.marcados).tipoVitoria) pode = true;
+    });
+    botao.classList.toggle('ativo', pode);
+    botao.setAttribute('aria-disabled', pode ? 'false' : 'true');
 }
 
 async function gritarBingo() {
-    const btn = document.getElementById('btnBingo');
-    if (!btn.classList.contains('ativo')) { showToast('Complete uma sequência!'); return; }
-    let cartVenc = -1;
-    for (let i = 0; i < jogador.cartelas.length; i++) {
-        if (verificarSequencia(jogador.cartelas[i].numeros, jogador.cartelas[i].marcados)) { cartVenc = i; break; }
+    const botao = document.getElementById('btnBingo');
+    if (!botao.classList.contains('ativo')) {
+        showToast('Complete uma linha, coluna ou diagonal');
+        return;
     }
-    if (cartVenc === -1) { showToast('Nenhuma sequência!'); return; }
+    if (document.getElementById('telaVerificacao').classList.contains('active')) {
+        showToast('Seu bingo já está com o operador');
+        return;
+    }
+    let cartelaVencedora = -1;
+    let tipo = '';
+    (jogador.cartelas || []).forEach((cartela, indice) => {
+        if (cartelaVencedora !== -1) return;
+        const sequencia = BingoComum.verificarSequencias(cartela.numeros, cartela.marcados);
+        if (sequencia.tipoVitoria) {
+            cartelaVencedora = indice;
+            tipo = sequencia.tipoVitoria;
+        }
+    });
+    if (cartelaVencedora === -1) {
+        showToast('Nenhuma sequência ainda');
+        return;
+    }
     playSound('bingo');
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
     try {
-        await db.ref('salas/' + salaId + '/alertasBingo').push({ jogadorId: jogadorId, jogadorNome: jogador.nome + ' ' + jogador.sobrenome, foto: jogador.foto, cartelaIndex: cartVenc, timestamp: Date.now() });
-        await db.ref('jogadores/' + jogadorId).update({ gritouBingo: true, cartelaVencedora: cartVenc });
+        await db.ref('salas/' + salaId + '/alertasBingo').push({
+            jogadorId: jogadorId,
+            jogadorNome: (jogador.nome || '') + ' ' + (jogador.sobrenome || ''),
+            foto: jogador.foto || null,
+            cartelaIndex: cartelaVencedora,
+            tipo: tipo,
+            timestamp: Date.now()
+        });
+        await db.ref('jogadores/' + jogadorId).update({ gritouBingo: true, ultimoBingo: null, cartelaVencedora: cartelaVencedora });
         document.getElementById('telaVerificacao').classList.add('active');
-    } catch (e) { showToast('Erro'); }
+    } catch (erro) {
+        showToast(erro.message || 'Não consegui avisar o operador');
+    }
+}
+
+async function cancelarBingo() {
+    document.getElementById('telaVerificacao').classList.remove('active');
+    try {
+        await db.ref('jogadores/' + jogadorId).update({ gritouBingo: false, ultimoBingo: 'cancelado' });
+        const snap = await db.ref('salas/' + salaId + '/alertasBingo').once('value');
+        const alertas = snap.val() || {};
+        await Promise.all(Object.entries(alertas).map(([id, alerta]) => {
+            if (alerta && alerta.jogadorId === jogadorId) return db.ref('salas/' + salaId + '/alertasBingo/' + id).remove();
+            return Promise.resolve();
+        }));
+        showToast('Aviso cancelado');
+    } catch (erro) {
+        showToast(erro.message || 'Não consegui cancelar');
+    }
 }
 
 function escutarMudancas() {
+    if (ouvintesLigados) return;
+    ouvintesLigados = true;
     db.ref('salas/' + salaId).on('value', (snap) => {
-        const s = snap.val();
-        if (!s) return;
-        sala = s;
-        ganhadores = s.ganhadores || [];
-        renderizarGanhadores();
-        if (s.jogando && !document.getElementById('telaJogo').classList.contains('active')) {
-            document.getElementById('fimJogoOverlay').classList.remove('active');
-            iniciarJogo();
+        const dados = snap.val();
+        if (!dados) {
+            mostrarErro('A sala foi encerrada.');
+            return;
         }
-        if (s.girando) {
-            document.getElementById('globoGirandoAviso').classList.add('active');
-            if (!vibrando && navigator.vibrate) { vibrando = true; vibraContinuo(); }
+        const estavaJogando = sala && sala.jogando;
+        const anteriores = ganhadores;
+        sala = dados;
+        ganhadores = BingoComum.listaDe(dados.ganhadores);
+        if (ganhadoresProntos) {
+            const novo = ganhadores.find((item) => item.jogadorId === jogadorId && !anteriores.some((antigo) => antigo.jogadorId === jogadorId && antigo.timestamp === item.timestamp));
+            if (novo && !(novo.tipo || '').includes('CARTELA CHEIA')) {
+                document.getElementById('telaVerificacao').classList.remove('active');
+                document.getElementById('resultadoIcon').textContent = '🎉';
+                document.getElementById('resultadoTitulo').textContent = 'Você ganhou!';
+                document.getElementById('resultadoTitulo').className = 'resultado-titulo venceu';
+                document.getElementById('resultadoMsg').textContent = (novo.tipo || 'Bingo') + ' — o jogo continua.';
+                document.getElementById('telaResultado').classList.add('active');
+                criarConfetes();
+                playSound('vitoria');
+            }
+        }
+        ganhadoresProntos = true;
+        renderizarGanhadores();
+        renderizarChamados();
+        const telaJogoAtiva = document.getElementById('telaJogo').classList.contains('active');
+        if (dados.jogando && !telaJogoAtiva && jogador) iniciarJogo();
+        if (dados.jogando && telaJogoAtiva && !estavaJogando) {
+            document.getElementById('fimJogoOverlay').classList.remove('active');
+            vitoriaAnunciada = false;
+            document.querySelectorAll('.confetti').forEach((item) => item.remove());
+        }
+        const aviso = document.getElementById('globoGirandoAviso');
+        if (dados.girando) {
+            aviso.classList.add('active');
+            if (!vibrando && navigator.vibrate) {
+                vibrando = true;
+                vibraContinuo();
+            }
         } else {
-            document.getElementById('globoGirandoAviso').classList.remove('active');
+            aviso.classList.remove('active');
             vibrando = false;
         }
-        if (s.superVencedor) {
+        if (dados.superVencedor) {
             document.getElementById('telaVerificacao').classList.remove('active');
             document.getElementById('telaResultado').classList.remove('active');
             document.getElementById('fimJogoOverlay').classList.add('active');
-            document.getElementById('fimJogoVencedor').textContent = s.superVencedor.nome + ' venceu com CARTELA CHEIA!';
-            criarConfetes();
-            playSound('vitoria');
+            document.getElementById('fimJogoVencedor').textContent = (dados.superVencedor.nome || 'Alguém') + ' venceu com a cartela cheia.';
+            if (!vitoriaAnunciada) {
+                vitoriaAnunciada = true;
+                criarConfetes();
+                playSound('vitoria');
+            }
+        } else if (!dados.superVencedor) {
+            document.getElementById('fimJogoOverlay').classList.remove('active');
+            if (!dados.jogando) vitoriaAnunciada = false;
         }
     });
+
     db.ref('jogadores/' + jogadorId).on('value', (snap) => {
-        const d = snap.val();
-        if (!d) return;
-        const antigoBingo = jogador?.gritouBingo;
-        jogador = d;
-        renderizarCartelas();
-        atualizarNavegacao();
-        atualizarBotaoBingo();
-        if (antigoBingo && !jogador.gritouBingo) { document.getElementById('telaVerificacao').classList.remove('active'); showToast('Bingo não validado!'); }
-    });
-    db.ref('salas/' + salaId + '/ganhadores').on('value', (snap) => {
-        const g = snap.val() || [];
-        const meusNomes = jogador.nome + ' ' + jogador.sobrenome;
-        const novoGanhador = g.find(x => x.nome === meusNomes && !ganhadores.find(y => y.nome === meusNomes && y.timestamp === x.timestamp));
-        if (novoGanhador && !novoGanhador.tipo.includes('CARTELA CHEIA')) {
-            document.getElementById('telaVerificacao').classList.remove('active');
-            document.getElementById('resultadoIcon').textContent = '🎉';
-            document.getElementById('resultadoTitulo').textContent = 'VOCÊ GANHOU!';
-            document.getElementById('resultadoTitulo').className = 'resultado-titulo venceu';
-            document.getElementById('resultadoMsg').textContent = novoGanhador.tipo + ' - Continue jogando!';
-            document.getElementById('telaResultado').classList.add('active');
-            criarConfetes();
-            playSound('vitoria');
-            db.ref('jogadores/' + jogadorId + '/gritouBingo').set(false);
+        const dados = snap.val();
+        if (!dados) return;
+        const antigoBingo = jogador ? jogador.gritouBingo : false;
+        const cartelasIguais = JSON.stringify(jogador && jogador.cartelas) === JSON.stringify(dados.cartelas);
+        jogador = dados;
+        if (!cartelasIguais && document.getElementById('telaJogo').classList.contains('active')) {
+            renderizarCartelas();
+            atualizarNavegacao();
         }
-        ganhadores = g;
+        if (document.getElementById('telaJogo').classList.contains('active')) atualizarBotaoBingo();
+        if (antigoBingo && !jogador.gritouBingo) {
+            document.getElementById('telaVerificacao').classList.remove('active');
+            if (jogador.ultimoBingo === 'recusado') showToast('Bingo não confirmado. Confira a cartela e continue.');
+        }
     });
-    db.ref('salas/' + salaId + '/reacoes').on('child_added', (snap) => {
-        const r = snap.val();
-        if (r.nome !== jogador.nome) mostrarBalaoReacao(r);
+
+    const reacoesRef = db.ref('salas/' + salaId + '/reacoes');
+    let reacoesProntas = false;
+    reacoesRef.on('child_added', (snap) => {
+        if (!reacoesProntas) return;
+        const reacao = snap.val();
+        if (reacao && reacao.nome && reacao.nome !== jogador.nome) mostrarBalaoReacao(reacao);
+    });
+    reacoesRef.once('value', () => { reacoesProntas = true; });
+}
+
+function renderizarChamados() {
+    const lista = document.getElementById('listaChamados');
+    const resumo = document.getElementById('resumoChamados');
+    if (!lista || !sala) return;
+    const numeros = BingoComum.listaNumeros(sala.numerosSorteados);
+    if (resumo) resumo.textContent = numeros.length ? numeros.length + ' números chamados' : 'Nenhum número ainda';
+    const ultimo = numeros.length ? numeros[numeros.length - 1] : null;
+    lista.innerHTML = '';
+    numeros.forEach((numero) => {
+        const item = document.createElement('span');
+        item.className = 'chamado chamado-' + BingoComum.getLetra(numero).toLowerCase() + (numero === ultimo ? ' ultimo' : '');
+        item.textContent = BingoComum.getLetra(numero) + ' ' + numero;
+        lista.appendChild(item);
     });
 }
 
 function renderizarGanhadores() {
-    const sec = document.getElementById('ganhadoresAviso');
-    const lst = document.getElementById('ganhadoresMini');
-    if (!ganhadores.length) { sec.style.display = 'none'; return; }
-    sec.style.display = 'block';
-    lst.innerHTML = ganhadores.map(g => '<div class="ganhador-mini"><img src="' + (g.foto || getDefaultAvatar()) + '"><span>' + g.nome.split(' ')[0] + '</span></div>').join('');
+    const secao = document.getElementById('ganhadoresAviso');
+    const lista = document.getElementById('ganhadoresMini');
+    if (!ganhadores.length) {
+        secao.style.display = 'none';
+        lista.innerHTML = '';
+        return;
+    }
+    secao.style.display = 'block';
+    lista.innerHTML = '';
+    ganhadores.forEach((item) => {
+        const bloco = document.createElement('div');
+        bloco.className = 'ganhador-mini';
+        const img = document.createElement('img');
+        img.alt = '';
+        img.src = BingoComum.srcSegura(item.foto) || BingoComum.avatarPadrao();
+        const nome = document.createElement('span');
+        nome.textContent = String(item.nome || 'Jogador').split(' ')[0];
+        bloco.append(img, nome);
+        lista.appendChild(bloco);
+    });
 }
 
-function vibraContinuo() { if (!vibrando) return; if (navigator.vibrate) navigator.vibrate(200); setTimeout(vibraContinuo, 300); }
+function vibraContinuo() {
+    if (!vibrando) return;
+    if (navigator.vibrate) navigator.vibrate(120);
+    setTimeout(vibraContinuo, 500);
+}
 
-function mostrarBalaoReacao(r) {
+function mostrarBalaoReacao(reacao) {
     const balao = document.createElement('div');
     balao.className = 'balao-reacao';
-    balao.style.left = (10 + Math.random() * 70) + '%';
-    balao.innerHTML = '<img class="balao-foto" src="' + (r.foto || getDefaultAvatar()) + '"><span class="balao-nome">' + r.nome + ' ✅</span>';
+    balao.style.left = (10 + Math.random() * 60) + '%';
+    const img = document.createElement('img');
+    img.className = 'balao-foto';
+    img.alt = '';
+    img.src = BingoComum.srcSegura(reacao.foto) || BingoComum.avatarPadrao();
+    const nome = document.createElement('span');
+    nome.className = 'balao-nome';
+    nome.textContent = (reacao.nome || '') + ' marcou';
+    balao.append(img, nome);
     document.body.appendChild(balao);
     setTimeout(() => balao.remove(), 2500);
 }
 
 function voltarJogo() {
-    document.querySelectorAll('.confetti').forEach(c => c.remove());
+    document.querySelectorAll('.confetti').forEach((item) => item.remove());
     document.getElementById('telaResultado').classList.remove('active');
 }
 
-function atualizarNavegacao() {
-    const tot = jogador.cartelas.length;
-    document.getElementById('cartelaAtualNum').textContent = cartelaAtual + 1;
-    document.getElementById('btnAnterior').disabled = cartelaAtual === 0;
-    document.getElementById('btnProxima').disabled = cartelaAtual === tot - 1;
-    document.querySelectorAll('.pagination-dot').forEach((d, idx) => { d.classList.toggle('active', idx === cartelaAtual); });
-    document.getElementById('cartelasContainer').style.transform = 'translateX(-' + cartelaAtual * 100 + '%)';
+function trocarJogador() {
+    if (!confirm('Sair desta cartela neste celular?')) return;
+    localStorage.removeItem('bingo_jogador_' + salaId);
+    location.reload();
 }
 
-function cartelaAnterior() { if (cartelaAtual > 0) { cartelaAtual--; atualizarNavegacao(); } }
-function proximaCartela() { if (cartelaAtual < jogador.cartelas.length - 1) { cartelaAtual++; atualizarNavegacao(); } }
-function irParaCartela(idx) { cartelaAtual = idx; atualizarNavegacao(); }
+function atualizarNavegacao() {
+    const total = (jogador.cartelas || []).length;
+    if (cartelaAtual > total - 1) cartelaAtual = Math.max(0, total - 1);
+    document.getElementById('cartelaAtualNum').textContent = String(cartelaAtual + 1);
+    document.getElementById('btnAnterior').disabled = cartelaAtual === 0;
+    document.getElementById('btnProxima').disabled = cartelaAtual >= total - 1;
+    document.querySelectorAll('.pagination-dot').forEach((dot, idx) => dot.classList.toggle('active', idx === cartelaAtual));
+    document.getElementById('cartelasContainer').style.transform = 'translateX(-' + (cartelaAtual * 100) + '%)';
+}
+
+function cartelaAnterior() {
+    if (cartelaAtual > 0) {
+        cartelaAtual -= 1;
+        atualizarNavegacao();
+    }
+}
+function proximaCartela() {
+    if (jogador && cartelaAtual < jogador.cartelas.length - 1) {
+        cartelaAtual += 1;
+        atualizarNavegacao();
+    }
+}
+function irParaCartela(idx) {
+    cartelaAtual = idx;
+    atualizarNavegacao();
+}
 
 function setupSwipe() {
-    const w = document.getElementById('cartelasWrapper');
-    w.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-    w.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 50) { diff > 0 ? proximaCartela() : cartelaAnterior(); }
+    const wrapper = document.getElementById('cartelasWrapper');
+    if (!wrapper) return;
+    wrapper.addEventListener('touchstart', (evento) => {
+        touchStartX = evento.changedTouches[0].screenX;
+    }, { passive: true });
+    wrapper.addEventListener('touchend', (evento) => {
+        const diff = touchStartX - evento.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) proximaCartela();
+            else cartelaAnterior();
+        }
     }, { passive: true });
 }
 
 function criarConfetes() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.confetti').forEach((item) => item.remove());
     const cores = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7', '#ffd700', '#ec4899', '#4ecdc4'];
-    for (let i = 0; i < 80; i++) {
-        const c = document.createElement('div');
-        c.className = 'confetti';
-        c.style.left = Math.random() * 100 + '%';
-        c.style.background = cores[Math.floor(Math.random() * cores.length)];
-        c.style.animationDelay = Math.random() * 3 + 's';
-        c.style.animationDuration = (2 + Math.random() * 2) + 's';
-        document.body.appendChild(c);
+    for (let i = 0; i < 50; i += 1) {
+        const confete = document.createElement('div');
+        confete.className = 'confetti';
+        confete.style.left = Math.random() * 100 + '%';
+        confete.style.background = cores[Math.floor(Math.random() * cores.length)];
+        confete.style.animationDelay = Math.random() * 2 + 's';
+        confete.style.animationDuration = (2 + Math.random() * 2) + 's';
+        document.body.appendChild(confete);
     }
 }
 
 function playSound(tipo) {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = BingoComum.obterAudio();
+        if (!ctx) return;
+        const tocar = (freq, inicio, duracao, tipoOnda, volume) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = tipoOnda || 'sine';
+            osc.frequency.setValueAtTime(freq, inicio);
+            gain.gain.setValueAtTime(volume, inicio);
+            gain.gain.exponentialRampToValueAtTime(0.01, inicio + duracao);
+            osc.start(inicio);
+            osc.stop(inicio + duracao);
+        };
         if (tipo === 'ploc') {
-            const osc = ctx.createOscillator(); const gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
             osc.frequency.setValueAtTime(800, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-            osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.1);
         } else if (tipo === 'bingo') {
-            [600, 800, 1000, 1200].forEach((f, i) => {
-                setTimeout(() => {
-                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                    osc.connect(gain); gain.connect(ctx.destination);
-                    osc.frequency.value = f;
-                    gain.gain.setValueAtTime(0.4, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
-                }, i * 100);
-            });
+            [600, 800, 1000, 1200].forEach((freq, i) => tocar(freq, ctx.currentTime + i * 0.1, 0.28, 'square', 0.2));
         } else if (tipo === 'vitoria') {
-            [523, 659, 784, 880, 1047].forEach((n, i) => {
-                setTimeout(() => {
-                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                    osc.connect(gain); gain.connect(ctx.destination);
-                    osc.frequency.value = n;
-                    gain.gain.setValueAtTime(0.4, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-                    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4);
-                }, i * 150);
-            });
+            [523, 659, 784, 880, 1047].forEach((freq, i) => tocar(freq, ctx.currentTime + i * 0.12, 0.35, 'sine', 0.22));
         }
-    } catch (e) {}
+    } catch (erro) {
+        /* áudio é opcional */
+    }
 }

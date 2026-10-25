@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
     <title>🎰 Bingo dos Veloso - Operador</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1a2e'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23ffe66d'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-size='14' font-family='sans-serif' font-weight='700' fill='%231a1a2e'%3EB%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css/operador.css">
     <link rel="stylesheet" href="css/animacoes.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="vendor/firebase-app-compat.js"></script>
+    <script src="vendor/firebase-database-compat.js"></script>
+    <script src="vendor/qrcode.min.js"></script>
 </head>
 <body>
     <!-- ALERTAS TOPO -->
@@ -19,9 +23,21 @@
 
     <!-- HEADER -->
     <header class="header">
-        <div class="logo">🎰 Bingo dos Veloso</div>
-        <button class="btn btn-reset" onclick="resetarTudo()">🔄 RESETAR</button>
+        <div>
+            <div class="logo">🎰 Bingo dos Veloso</div>
+            <p class="edicao">Natal 2026</p>
+        </div>
+        <div class="header-acoes">
+            <span id="statusConexao" class="status-conexao offline">Conectando…</span>
+            <button type="button" class="btn btn-reset" onclick="resetarTudo()">🔄 RESETAR</button>
+        </div>
     </header>
+
+    <div id="avisoBanco" class="aviso-banco" hidden role="alert">
+        <h2>Banco de dados indisponível</h2>
+        <p id="avisoBancoTexto"></p>
+        <p><a href="https://console.firebase.google.com/project/bingo-16f47/database/bingo-16f47-default-rtdb/data" target="_blank" rel="noopener">Abrir o Firebase Console</a></p>
+    </div>
 
     <!-- TELA INICIAL -->
     <main class="container">
@@ -29,28 +45,30 @@
             <!-- CRIAR SALA -->
             <div class="card">
                 <h2 class="card-title"><span>🎯</span> Criar Nova Sala</h2>
+                <form id="formCriar" onsubmit="event.preventDefault(); criarSala();">
                 <div class="form-group">
-                    <label>Nome da Sala</label>
-                    <input type="text" id="nomeSala" placeholder="Ex: Bingo de Natal">
+                    <label for="nomeSala">Nome da Sala</label>
+                    <input type="text" id="nomeSala" maxlength="60" placeholder="Ex: Natal dos Veloso 2026" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label>Foto do Prêmio (opcional)</label>
-                    <div class="premio-upload" onclick="document.getElementById('premioInput').click()">
+                    <p class="field-label" id="labelPremio">Foto do Prêmio (opcional)</p>
+                    <label class="premio-upload" for="premioInput">
                         <div id="premioPreview">
-                            <div class="premio-icon">🎁</div>
+                            <div class="premio-icon" aria-hidden="true">🎁</div>
                             <p>Clique para adicionar</p>
                         </div>
-                    </div>
-                    <input type="file" id="premioInput" accept="image/*" style="display:none" onchange="handlePremio(event)">
+                    </label>
+                    <input type="file" id="premioInput" accept="image/*" class="sr-only" aria-labelledby="labelPremio" onchange="handlePremio(event)">
                 </div>
                 <div class="form-group">
-                    <label>Cartelas por Jogador</label>
+                    <label for="qtdCartelas">Cartelas por Jogador</label>
                     <div class="slider-container">
-                        <input type="range" id="qtdCartelas" min="1" max="6" value="3" oninput="document.getElementById('qtdCartelasVal').textContent=this.value">
+                        <input type="range" id="qtdCartelas" min="1" max="6" value="3" aria-valuemin="1" aria-valuemax="6" aria-valuenow="3" oninput="document.getElementById('qtdCartelasVal').textContent=this.value; this.setAttribute('aria-valuenow', this.value)">
                         <span class="slider-value" id="qtdCartelasVal">3</span>
                     </div>
                 </div>
-                <button class="btn-primary" onclick="criarSala()">✨ CRIAR SALA</button>
+                <button class="btn-primary" type="submit">✨ CRIAR SALA</button>
+                </form>
             </div>
 
             <!-- SALAS ATIVAS -->
@@ -70,10 +88,10 @@
             <div class="jogo-header">
                 <h1 class="jogo-titulo" id="jogoTitulo">🎰 Bingo 🎰</h1>
                 <div class="premio-destaque" id="premioDestaque" style="display:none">
-                    <img class="premio-img-grande" id="premioImgJogo" src="">
+                    <img class="premio-img-grande" id="premioImgJogo" alt="Prêmio">
                     <span class="premio-texto">🏆 PRÊMIO</span>
                 </div>
-                <button class="btn-voltar" onclick="voltarInicio()">⬅️ Voltar</button>
+                <button type="button" class="btn-voltar" onclick="voltarInicio()">⬅️ Voltar</button>
             </div>
 
             <!-- GANHADORES -->
@@ -95,8 +113,8 @@
                 </div>
 
                 <div class="controles-section">
-                    <button class="btn-sortear" id="btnSortear" onclick="iniciarSorteio()">🎲 GIRAR GLOBO</button>
-                    <button class="btn-ultimo" id="btnUltimo" onclick="mostrarUltimoNumero()" disabled>🔄 VER ÚLTIMO</button>
+                    <button type="button" class="btn-sortear" id="btnSortear" onclick="iniciarSorteio()">🎲 GIRAR GLOBO</button>
+                    <button type="button" class="btn-ultimo" id="btnUltimo" onclick="mostrarUltimoNumero()" disabled>🔄 VER ÚLTIMO</button>
                 </div>
             </div>
 
@@ -129,10 +147,10 @@
     </div>
 
     <!-- MODAL REGRAS -->
-    <div class="modal" id="regrasModal">
+    <div class="modal" id="regrasModal" role="dialog" aria-modal="true" aria-labelledby="tituloRegras">
         <div class="modal-content">
-            <button class="modal-close" onclick="fecharModal('regrasModal')">×</button>
-            <h2 class="regras-title">📜 REGRAS DO JOGO</h2>
+            <button type="button" class="modal-close" onclick="fecharModal('regrasModal')" aria-label="Fechar">×</button>
+            <h2 class="regras-title" id="tituloRegras">📜 REGRAS DO JOGO</h2>
             <div class="regras-lista">
                 <div class="regra-item">
                     <div class="regra-icon">🎱</div>
@@ -165,25 +183,25 @@
                     <div class="regra-desc">Centro já marcado!</div>
                 </div>
             </div>
-            <button class="btn-iniciar-jogo" onclick="confirmarInicioJogo()">🎮 COMEÇAR!</button>
+            <button type="button" class="btn-iniciar-jogo" onclick="confirmarInicioJogo()">🎮 COMEÇAR!</button>
         </div>
     </div>
 
     <!-- MODAL JOGADORES -->
-    <div class="modal" id="modalJogadores">
+    <div class="modal" id="modalJogadores" role="dialog" aria-modal="true" aria-labelledby="tituloJogadores">
         <div class="modal-content">
-            <button class="modal-close" onclick="fecharModal('modalJogadores')">×</button>
-            <h2 class="regras-title">👥 JOGADORES</h2>
+            <button type="button" class="modal-close" onclick="fecharModal('modalJogadores')" aria-label="Fechar">×</button>
+            <h2 class="regras-title" id="tituloJogadores">👥 JOGADORES</h2>
             <p id="totalJogadores" style="text-align:center;margin-bottom:20px"></p>
             <div id="jogadoresLista"></div>
         </div>
     </div>
 
     <!-- MODAL VERIFICAÇÃO -->
-    <div class="modal" id="modalVerificacao">
+    <div class="modal" id="modalVerificacao" role="dialog" aria-modal="true" aria-labelledby="tituloVerificacao">
         <div class="modal-content">
-            <button class="modal-close" onclick="fecharModal('modalVerificacao')">×</button>
-            <h2 class="regras-title">🔍 VERIFICAR BINGO</h2>
+            <button type="button" class="modal-close" onclick="fecharModal('modalVerificacao')" aria-label="Fechar">×</button>
+            <h2 class="regras-title" id="tituloVerificacao">🔍 VERIFICAR BINGO</h2>
             <p id="verificacaoNome" style="text-align:center;font-size:1.3rem;margin-bottom:20px"></p>
             <div class="verificacao-cartela" id="verificacaoCartela"></div>
             <div id="resultadoVerificacao"></div>
@@ -196,13 +214,13 @@
         <div class="vencedor-container">
             <div class="vencedor-trofeu">🏆</div>
             <h1 class="vencedor-titulo">TEMOS UM CAMPEÃO!</h1>
-            <img class="vencedor-foto" id="vencedorFoto" src="">
+            <img class="vencedor-foto" id="vencedorFoto" alt="">
             <h2 class="vencedor-nome" id="vencedorNome"></h2>
             <div class="premio-vencedor" id="premioVencedor">
-                <img id="premioVencedorImg" src="">
+                <img id="premioVencedorImg" alt="Prêmio">
                 <span>GANHOU O PRÊMIO!</span>
             </div>
-            <button class="btn-novo-jogo" onclick="novoJogo()">🎰 NOVO JOGO</button>
+            <button type="button" class="btn-novo-jogo" onclick="novoJogo()">🎰 NOVO JOGO</button>
         </div>
     </div>
 
@@ -215,6 +233,7 @@
         <div class="loading-text">Carregando...</div>
     </div>
 
+    <script src="js/comum.js"></script>
     <script src="js/animacoes.js"></script>
     <script src="js/operador.js"></script>
 </body>

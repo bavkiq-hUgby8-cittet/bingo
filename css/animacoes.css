@@ -302,3 +302,13 @@
     .bola-numero-grande .letra { font-size: 2.5rem; }
     .bola-numero-grande .numero { font-size: 6rem; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .letra-gigante,
+    .bola-numero-grande,
+    .texto-suspense,
+    .interrogacao,
+    .texto-numero-sorteado {
+        animation: none !important;
+    }
+}
